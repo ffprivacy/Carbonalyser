@@ -11,7 +11,8 @@
     "storage",
     "downloads",
     "tabs",
-    "geolocation"
+    "geolocation",
+    "webRequest"
   ],
   "host_permissions": [
     "<all_urls>"
