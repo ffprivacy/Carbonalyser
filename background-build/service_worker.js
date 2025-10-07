@@ -1918,7 +1918,7 @@ sendHeadersListener = async (requestDetails) => {
 }
 
 setBrowserIcon = (type) => {
-  obrowser.browserAction.setIcon({path: `icons/icon-${type}-48.png`});
+  obrowser.action.setIcon({path: `icons/icon-${type}-48.png`});
 };
 
 addOneMinute = async () => {
