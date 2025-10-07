@@ -1,0 +1,14 @@
+lib/d3/d3-array.js
+lib/d3/d3-geo.js
+lib/carbonalyser/countries.js
+background-src/countries.js
+lib/carbonalyser/lib.js
+lib/carbonalyser/libPreferences.js
+lib/carbonalyser/libRegionSelect.js
+lib/carbonalyser/libEquivalence.js
+lib/carbonalyser/libStats.js
+background-src/regionUpdater.js
+background-src/trafficAnalyzer.js
+background-src/attentionAnalyzer.js
+background-src/periodicDownload.js
+
