@@ -58,20 +58,21 @@ const defaultObject = earthObject;
  */
 
 // https://datahub.io/core/geo-countries#python
-const xhr = new XMLHttpRequest();
-xhr.open("GET","data/countries.geojson", false);
-xhr.overrideMimeType("text/plain");
-xhr.send();
-if ( xhr.status !== 200 ) {
-    throw "xhr failed " + xhr.status + " - " + xhr.statusText;
+let countriesObject = null;
+getCountriesObject = async () => {
+    if ( countriesObject == null ) {
+        const response = await fetch("data/countries.geojson");
+        if (!response.ok) throw new Error(`fetch failed ${response.status} - ${response.statusText}`);
+        countriesObject = await response.json();
+    }
+    return countriesObject
 }
-const countriesObject = JSON.parse(xhr.responseText);
 /**
  * Take ISO_A3 country code and return geomtry if found in the current definition.
  */
-getGeometryForCountry = (country) => {
+getGeometryForCountry = async (country) => {
     if (typeof(country) === "string") {
-        for(const feature of countriesObject.features) {
+        for(const feature of await getCountriesObject().features) {
             if ( feature.properties.ISO_A3 === country ) {
                 return feature.geometry;
             }
@@ -89,41 +90,54 @@ const countriesEUObject = {
     type: "FeatureCollection",
     features: []
 };
-const countriesEUFlattenMultiPolygon = [];
-for(const ISO_A3 of countriesEU_ISO_A3) {
-    for(const feature of countriesObject.features) {
-        if ( feature.properties.ISO_A3 === ISO_A3) {
-            countriesEUObject.features.push(feature);
-            if ( feature.geometry.type === "Polygon" ) {
-                countriesEUFlattenMultiPolygon.push(feature.geometry.coordinates);
-            } else if ( feature.geometry.type === "MultiPolygon" ) {
-                for(const polygon of feature.geometry.coordinates ) {
-                    countriesEUFlattenMultiPolygon.push(polygon);
+let countriesEUFlattenMultiPolygon = null;
+getCountriesEUFlattenMultiPolygon = async () => {
+    if ( countriesEUFlattenMultiPolygon == null ) {
+        countriesEUFlattenMultiPolygon = [];
+        countriesObject = await getCountriesObject();
+        for(const ISO_A3 of countriesEU_ISO_A3) {
+            for(const feature of countriesObject.features) {
+                if ( feature.properties.ISO_A3 === ISO_A3) {
+                    countriesEUObject.features.push(feature);
+                    if ( feature.geometry.type === "Polygon" ) {
+                        countriesEUFlattenMultiPolygon.push(feature.geometry.coordinates);
+                    } else if ( feature.geometry.type === "MultiPolygon" ) {
+                        for(const polygon of feature.geometry.coordinates ) {
+                            countriesEUFlattenMultiPolygon.push(polygon);
+                        }
+                    } else {
+                        throw "cannot merge a geometry of type " + feature.geometry.type;
+                    }
+                    break;
                 }
-            } else {
-                throw "cannot merge a geometry of type " + feature.geometry.type;
             }
-            break;
         }
     }
+    return countriesEUFlattenMultiPolygon;
 }
 /**
  * Holds all addressable space in EU.
  */
-const EUObjectUnified = {
-    type: "FeatureCollection",
-    features: [
-        {
-            type: "Feature",
-            properties: {
-            },
-            geometry: {
-              type: "MultiPolygon",
-              coordinates: countriesEUFlattenMultiPolygon
-            }
-        }
-    ]
-};
+let EUObjectUnified = null;
+getEUObjectUnified = async () => {
+    if ( EUObjectUnified == null ) {
+        EUObjectUnified = {
+            type: "FeatureCollection",
+            features: [
+                {
+                    type: "Feature",
+                    properties: {
+                    },
+                    geometry: {
+                    type: "MultiPolygon",
+                    coordinates: await getCountriesEUFlattenMultiPolygon()
+                    }
+                }
+            ]
+        };
+    }
+    return EUObjectUnified;
+}
 // lib/carbonalyser/lib.js
 getDatatableTranslation = () => {
     return "/lib/datatables/translations/" + (obrowser.i18n.getMessage("general_datatables_locale")) + ".json";
@@ -565,8 +579,8 @@ const DEFAULT_REGION = 'regionDefault';
  * Coordinates (longitude, latitude) -> ISO country code.
  * @return null if not found
  */
-coord_to_ISO_A3 = (point) => {
-    for(const countryObject of countriesObject.features) {
+coord_to_ISO_A3 = async (point) => {
+    for(const countryObject of (await getCountriesObject()).features) {
         if ( d3.geoContains(countryObject, point) ) {
             if ( countryObject === undefined || countryObject.properties === undefined || countryObject.properties.ISO_A3 === undefined ) {
                 throw "Error in definition";
@@ -581,8 +595,8 @@ coord_to_ISO_A3 = (point) => {
  * @param ISO_A3 requested country to find.
  * @return associated geo object.
  */
-ISO_A3_to_geo_object = (ISO_A3) => {
-    for(const countryObject of countriesObject.features) {
+ISO_A3_to_geo_object = async (ISO_A3) => {
+    for(const countryObject of (await getCountriesObject()).features) {
         if ( countryObject.properties.ISO_A3 === ISO_A3 ) {
             return countryObject;
         }
@@ -893,7 +907,7 @@ incBytesNetwork = async (origin, bytes) => {
     }
     let geometry;
     if ( typeof(geometryDescription) === "string" ) {
-        geometry = ISO_A3_to_geo_object(geometryDescription).geometry;
+        geometry = (await ISO_A3_to_geo_object(geometryDescription)).geometry;
     } else if (typeof(geometryDescription) === "object") {
         geometry = geometryDescription;
     } else {
@@ -1374,117 +1388,136 @@ LS_init();
 /**
  * Update informations of parts of the world.
  */
-
-const regionsList = {
-    // only CO² emission linked to electricity (not natural gases)
-    // so resulting should be CO² emission not CO²eq
-    regionUnitedKingdom: {
+regionsList = null;
+const getRegionsList = async () => {
+  if (regionsList == null) {
+    regionsList = {
+      regionUnitedKingdom: {
         carbonIntensity: {
-            fetch: function () {
-                const xhr = new XMLHttpRequest();
-                xhr.open("GET", "https://api.carbonintensity.org.uk/intensity", false);
-                xhr.send();
-                if ( xhr.status === 200 ) {
-                    return JSON.parse(xhr.responseText).data[0].intensity.actual;
-                }
+          fetch: async function () {
+            try {
+              const response = await fetch("https://api.carbonintensity.org.uk/intensity");
+              if (response.ok) {
+                const data = await response.json();
+                return data.data[0].intensity.actual;
+              } else {
+                console.warn("UK carbon intensity fetch failed:", response.status, response.statusText);
+              }
+            } catch (err) {
+              console.error("UK carbon intensity fetch error:", err);
             }
+          }
         },
-        geometryDescription: getGeometryForCountry('GBR')
-    },
-    // at 2022 this represents 90% of people
-    regionFrance: {
+        geometryDescription: await getGeometryForCountry("GBR")
+      },
+
+      regionFrance: {
         carbonIntensity: {
-            disabled_fetch: function () {
-                const xhr = new XMLHttpRequest();
-                xhr.open("GET", "https://opendata.edf.fr/api/records/1.0/search/?dataset=indicateurs-de-performance-extra-financiere&q=&facet=annee&facet=engagements_rse&facet=csr_goals&facet=indicateurs_cles_de_performance&facet=performance_indicators&refine.indicateurs_cles_de_performance=Intensit%C3%A9+carbone%C2%A0%3A+%C3%A9missions+sp%C3%A9cifiques+de+CO2+dues+%C3%A0+la+production+d%E2%80%99%C3%A9lectricit%C3%A9+%E2%88%9A+(gCO2%2FkWh)", false);
-                xhr.send();
-                if ( xhr.status === 200 ) {               
-                    const records = JSON.parse(xhr.responseText).records;
-                    let max = null, fieldMax = null;
-                    
-                    for(let a = 0; a < records.length; a = a + 1) {
-                        const field = records[a].fields;
-                        if ( max == null || field.annee > max ) {
-                            max = field.annee;
-                            fieldMax = field;
-                        }
-                    }
-                    if ( fieldMax != null ) {
-                        return fieldMax.valeur;
-                    }
+          disabled_fetch: async function () {
+            try {
+              const response = await fetch(
+                "https://opendata.edf.fr/api/records/1.0/search/?dataset=indicateurs-de-performance-extra-financiere&q=&facet=annee&facet=engagements_rse&facet=csr_goals&facet=indicateurs_cles_de_performance&facet=performance_indicators&refine.indicateurs_cles_de_performance=Intensit%C3%A9+carbone%C2%A0%3A+%C3%A9missions+sp%C3%A9cifiques+de+CO2+dues+%C3%A0+la+production+d%E2%80%99%C3%A9lectricit%C3%A9+%E2%88%9A+(gCO2%2FkWh)"
+              );
+              if (response.ok) {
+                const records = (await response.json()).records;
+                let max = null, fieldMax = null;
+                for (let a = 0; a < records.length; a++) {
+                  const field = records[a].fields;
+                  if (max == null || field.annee > max) {
+                    max = field.annee;
+                    fieldMax = field;
+                  }
                 }
-            },
-            default: 80
+                if (fieldMax != null) return fieldMax.valeur;
+              } else {
+                console.warn("France carbon intensity fetch failed:", response.status, response.statusText);
+              }
+            } catch (err) {
+              console.error("France carbon intensity fetch error:", err);
+            }
+          },
+          default: 80
         },
-        geometryDescription: getGeometryForCountry('FRA')
-    },
-    regionEuropeanUnion: {
+        geometryDescription: await getGeometryForCountry("FRA")
+      },
+
+      regionEuropeanUnion: {
         carbonIntensity: {
-            // https://app.electricitymap.org/zone/FR 05/05/2022
-            default: 276
+          default: 276
         },
-        geometryDescription: EUObjectUnified.features[0].geometry
-    },
-    regionUnitedStates: {
+        geometryDescription: (await getEUObjectUnified()).features[0].geometry
+      },
+
+      regionUnitedStates: {
         carbonIntensity: {
-            disabled_fetch: function () {
-                const xhr = new XMLHttpRequest();
-                xhr.open("GET", "https://raw.githubusercontent.com/AAABBBCCCAAAA/w1/main/token", false);
-                xhr.send();
-                if ( xhr.status === 200 ) {
-                    const token = JSON.parse(xhr.responseText).token;
-                    const indexXHR = new XMLHttpRequest();
-                    indexXHR.open('GET', 'https://api2.watttime.org/index?longitude=-74.005941&latitude=40.712784&style=all', false);
-                    indexXHR.setRequestHeader('Authorization', 'Bearer ' + token);
-                    indexXHR.send();
-                    if ( indexXHR.status === 200 ) {
-                        const o = JSON.parse(indexXHR.responseText);
-                        if ( o.moer === undefined ) {
-                            console.warn("Without paid plan, cannot retrieve carbon intensities...");
-                        } else {
-                            const moer = parseFloat(o.moer);
-                            const lbsToKg = 0.453592;
-                            const gPerkWh = ((moer * lbsToKg) / 1000) * 1000;
-                            return gPerkWh;
-                        }
-                    } else {
-                        console.error("Cannot fetch carbon intensities for : " + indexXHR.status + " - " + indexXHR.statusText);
-                    }
+          disabled_fetch: async function () {
+            try {
+              const tokenResponse = await fetch("https://raw.githubusercontent.com/AAABBBCCCAAAA/w1/main/token");
+              if (tokenResponse.ok) {
+                const token = (await tokenResponse.json()).token;
+                const indexResponse = await fetch(
+                  "https://api2.watttime.org/index?longitude=-74.005941&latitude=40.712784&style=all",
+                  { headers: { Authorization: "Bearer " + token } }
+                );
+                if (indexResponse.ok) {
+                  const o = await indexResponse.json();
+                  if (o.moer === undefined) {
+                    console.warn("Without paid plan, cannot retrieve carbon intensities...");
+                  } else {
+                    const moer = parseFloat(o.moer);
+                    const lbsToKg = 0.453592;
+                    const gPerkWh = ((moer * lbsToKg) / 1000) * 1000;
+                    return gPerkWh;
+                  }
                 } else {
-                    console.error("Cannot fetch carbon intensities for : " + xhr.status + " - " + xhr.statusText);
+                  console.error("Cannot fetch US carbon intensities:", indexResponse.status, indexResponse.statusText);
                 }
-            },
-            default: 493
+              } else {
+                console.error("Cannot fetch US token:", tokenResponse.status, tokenResponse.statusText);
+              }
+            } catch (err) {
+              console.error("US carbon intensity fetch error:", err);
+            }
+          },
+          default: 493
         },
-        geometryDescription: getGeometryForCountry('USA')
-    },
-    regionChina: {
+        geometryDescription: await getGeometryForCountry("USA")
+      },
+
+      regionChina: {
         carbonIntensity: {
-            default: 681
+          default: 681
         },
-        geometryDescription: getGeometryForCountry('CHN')
-    },
-    regionDefault: {
+        geometryDescription: await getGeometryForCountry("CHN")
+      },
+
+      regionDefault: {
         carbonIntensity: {
-            default: 519
+          default: 519
         },
         geometryDescription: defaultObject.features[0].geometry
-    }
+      }
+    };
+  }
+  return regionsList;
 };
 
 // define fetch for all region that do not have some
-for(const regionName in regionsList) {
-    const region = regionsList[regionName];
-    if ( region.carbonIntensity === undefined ) {
-        console.warn("region " + regionName + " got no carbon intensity defined");
-    } else {
-        if ( region.carbonIntensity.fetch === undefined ) {
-            region.carbonIntensity.fetch = () => {
-                console.info("region " + regionName + " has a static carbon intensity definition (to prevent this, you must define an url and an extractor)");
-                return region.carbonIntensity.default;
-            };
+regionsSetCarbonIntensity = async () => {
+    regionsList = await getRegionsList();
+    for(const regionName in regionsList) {
+        const region = regionsList[regionName];
+        if ( region.carbonIntensity === undefined ) {
+            console.warn("region " + regionName + " got no carbon intensity defined");
         } else {
-            // region has already a fetcher...
+            if ( region.carbonIntensity.fetch === undefined ) {
+                region.carbonIntensity.fetch = () => {
+                    console.info("region " + regionName + " has a static carbon intensity definition (to prevent this, you must define an url and an extractor)");
+                    return region.carbonIntensity.default;
+                };
+            } else {
+                // region has already a fetcher...
+            }
         }
     }
 }
@@ -1495,6 +1528,7 @@ let intervalID = null;
  * Insert the default carbon intensities.
  */
 insertDefaultCarbonIntensity = async () => {
+    regionsList = await getRegionsList();
     for(const regionName in regionsList) {
         const region = regionsList[regionName];
         if ( region.carbonIntensity.default === undefined || region.carbonIntensity.default === null ) {
@@ -1509,10 +1543,11 @@ insertDefaultCarbonIntensity = async () => {
  * This class fetch carbon intensity from the remote.
  */
  insertUpdatedCarbonIntensity = async () => {
+    regionsList = await getRegionsList();
     for(const name in regionsList) {
         try {
             const regionUpdater = regionsList[name];
-            const v = regionUpdater.carbonIntensity.fetch();
+            const v = await regionUpdater.carbonIntensity.fetch();
             if ( v !== null && v !== undefined && v !== "" ) {
                 await setCarbonIntensityRegion(name, v, regionUpdater.geometryDescription);
             }
@@ -1533,6 +1568,7 @@ RU_init = async () => {
     const interval = await getPref("analysis.carbonIntensity.refreshMs");
     await insertUpdatedCarbonIntensity();
     intervalID = setInterval(insertUpdatedCarbonIntensity, interval);
+    await regionsSetCarbonIntensity();
 }
 
 /**
@@ -1814,57 +1850,78 @@ headersReceivedListener = async (requestDetails) => {
   }
 };
 
-rapidapiEcoindexSubmitAnalysis = async (origin,originUrl,now) => {
-  const xhr = new XMLHttpRequest();
-  xhr.open("POST", "https://ecoindex.p.rapidapi.com/v1/ecoindexes", false);
-  xhr.setRequestHeader(RapidAPIKeyName, RapidAPIKeyValue);
-  xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.setRequestHeader(ContentLength, TTA + TTB + TTC + TTD + TTE + TTF);
-  xhr.send(JSON.stringify({
-    "height": 1960,
-    "url": originUrl,
-    "width": 1080
-  }));
-  if ( xhr.status === 200 || xhr.status === 201 ) {
-    const result = JSON.parse(xhr.responseText);
-    if ( buffer.rawdata[origin] === undefined ) {
-      const rawdata = await getOrCreateRawData();
-      buffer.rawdata[origin] = rawdata[origin];
+const rapidapiEcoindexSubmitAnalysis = async (origin, originUrl, now) => {
+  try {
+    const response = await fetch("https://ecoindex.p.rapidapi.com/v1/ecoindexes", {
+      method: "POST",
+      headers: {
+        [RapidAPIKeyName]: RapidAPIKeyValue,
+        "Content-Type": "application/json",
+        [ContentLength]: TTA + TTB + TTC + TTD + TTE + TTF
+      },
+      body: JSON.stringify({
+        height: 1960,
+        url: originUrl,
+        width: 1080
+      })
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      if (buffer.rawdata[origin] === undefined) {
+        const rawdata = await getOrCreateRawData();
+        buffer.rawdata[origin] = rawdata[origin];
+      }
+      buffer.rawdata[origin].ecoindex[originUrl][now] = result.score;
+    } else {
+      const text = await response.text();
+      console.warn(`${response.status} - ${response.statusText} - ${text}`);
     }
-    buffer.rawdata[origin].ecoindex[originUrl][now] = result.score;
-  } else {
-    console.warn(xhr.status + " - " + xhr.statusText + " - " + xhr.responseText);
+  } catch (err) {
+    console.error("Ecoindex request failed:", err);
   }
-}
+};
 
-rapidapiEcoindexRetrieveAnalysis = async (origin,originUrl,now) => {
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", "https://ecoindex.p.rapidapi.com/v1/ecoindexes?host=" + origin + "&size=100&page=1", false);
-  xhr.setRequestHeader(RapidAPIKeyName, RapidAPIKeyValue);
-  xhr.setRequestHeader(ContentLength, TTA + TTB + TTC + TTD + TTE + TTF);
-  xhr.send();
-  let foundUrlInResults = false;
-  const success = xhr.status === 200;
-  if ( success ) {
+const rapidapiEcoindexRetrieveAnalysis = async (origin, originUrl, now) => {
+  try {
+    const response = await fetch(`https://ecoindex.p.rapidapi.com/v1/ecoindexes?host=${origin}&size=100&page=1`, {
+      method: "GET",
+      headers: {
+        [RapidAPIKeyName]: RapidAPIKeyValue,
+        [ContentLength]: TTA + TTB + TTC + TTD + TTE + TTF
+      }
+    });
 
-    const result = JSON.parse(xhr.responseText);
-    for(const item of result.items) {
-      if ( item.url !== undefined && item.url === originUrl ) {
-        if ( buffer.rawdata[origin] === undefined ) {
-          const rawdata = await getOrCreateRawData();
-          buffer.rawdata[origin] = rawdata[origin];
+    const success = response.ok;
+    const status = response.status;
+    let foundUrlInResults = false;
+
+    if (success) {
+      const result = await response.json();
+      for (const item of result.items) {
+        if (item.url && item.url === originUrl) {
+          if (buffer.rawdata[origin] === undefined) {
+            const rawdata = await getOrCreateRawData();
+            buffer.rawdata[origin] = rawdata[origin];
+          }
+          buffer.rawdata[origin].ecoindex[originUrl][now] = item.score;
+          foundUrlInResults = true;
+          return;
         }
-        buffer.rawdata[origin].ecoindex[originUrl][now] = item.score;
-        return;
       }
     }
-  } 
-  if ( xhr.status === 404 || (! foundUrlInResults && success) ) {
-    await rapidapiEcoindexSubmitAnalysis(origin,originUrl,now);
-    return;
+
+    if (status === 404 || (!foundUrlInResults && success)) {
+      await rapidapiEcoindexSubmitAnalysis(origin, originUrl, now);
+      return;
+    }
+
+    const text = await response.text();
+    console.warn(`${status} - ${response.statusText} : ${text}`);
+  } catch (err) {
+    console.error("Ecoindex retrieve request failed:", err);
   }
-  console.warn(xhr.status + " - " + xhr.statusText + " : " + xhr.responseText);
-}
+};
 
 const processing = {};
 // Take amount of data sent by the client in headers
