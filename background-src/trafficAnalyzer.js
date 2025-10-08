@@ -240,57 +240,78 @@ headersReceivedListener = async (requestDetails) => {
   }
 };
 
-rapidapiEcoindexSubmitAnalysis = async (origin,originUrl,now) => {
-  const xhr = new XMLHttpRequest();
-  xhr.open("POST", "https://ecoindex.p.rapidapi.com/v1/ecoindexes", false);
-  xhr.setRequestHeader(RapidAPIKeyName, RapidAPIKeyValue);
-  xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.setRequestHeader(ContentLength, TTA + TTB + TTC + TTD + TTE + TTF);
-  xhr.send(JSON.stringify({
-    "height": 1960,
-    "url": originUrl,
-    "width": 1080
-  }));
-  if ( xhr.status === 200 || xhr.status === 201 ) {
-    const result = JSON.parse(xhr.responseText);
-    if ( buffer.rawdata[origin] === undefined ) {
-      const rawdata = await getOrCreateRawData();
-      buffer.rawdata[origin] = rawdata[origin];
+const rapidapiEcoindexSubmitAnalysis = async (origin, originUrl, now) => {
+  try {
+    const response = await fetch("https://ecoindex.p.rapidapi.com/v1/ecoindexes", {
+      method: "POST",
+      headers: {
+        [RapidAPIKeyName]: RapidAPIKeyValue,
+        "Content-Type": "application/json",
+        [ContentLength]: TTA + TTB + TTC + TTD + TTE + TTF
+      },
+      body: JSON.stringify({
+        height: 1960,
+        url: originUrl,
+        width: 1080
+      })
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      if (buffer.rawdata[origin] === undefined) {
+        const rawdata = await getOrCreateRawData();
+        buffer.rawdata[origin] = rawdata[origin];
+      }
+      buffer.rawdata[origin].ecoindex[originUrl][now] = result.score;
+    } else {
+      const text = await response.text();
+      console.warn(`${response.status} - ${response.statusText} - ${text}`);
     }
-    buffer.rawdata[origin].ecoindex[originUrl][now] = result.score;
-  } else {
-    console.warn(xhr.status + " - " + xhr.statusText + " - " + xhr.responseText);
+  } catch (err) {
+    console.error("Ecoindex request failed:", err);
   }
-}
+};
 
-rapidapiEcoindexRetrieveAnalysis = async (origin,originUrl,now) => {
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", "https://ecoindex.p.rapidapi.com/v1/ecoindexes?host=" + origin + "&size=100&page=1", false);
-  xhr.setRequestHeader(RapidAPIKeyName, RapidAPIKeyValue);
-  xhr.setRequestHeader(ContentLength, TTA + TTB + TTC + TTD + TTE + TTF);
-  xhr.send();
-  let foundUrlInResults = false;
-  const success = xhr.status === 200;
-  if ( success ) {
+const rapidapiEcoindexRetrieveAnalysis = async (origin, originUrl, now) => {
+  try {
+    const response = await fetch(`https://ecoindex.p.rapidapi.com/v1/ecoindexes?host=${origin}&size=100&page=1`, {
+      method: "GET",
+      headers: {
+        [RapidAPIKeyName]: RapidAPIKeyValue,
+        [ContentLength]: TTA + TTB + TTC + TTD + TTE + TTF
+      }
+    });
 
-    const result = JSON.parse(xhr.responseText);
-    for(const item of result.items) {
-      if ( item.url !== undefined && item.url === originUrl ) {
-        if ( buffer.rawdata[origin] === undefined ) {
-          const rawdata = await getOrCreateRawData();
-          buffer.rawdata[origin] = rawdata[origin];
+    const success = response.ok;
+    const status = response.status;
+    let foundUrlInResults = false;
+
+    if (success) {
+      const result = await response.json();
+      for (const item of result.items) {
+        if (item.url && item.url === originUrl) {
+          if (buffer.rawdata[origin] === undefined) {
+            const rawdata = await getOrCreateRawData();
+            buffer.rawdata[origin] = rawdata[origin];
+          }
+          buffer.rawdata[origin].ecoindex[originUrl][now] = item.score;
+          foundUrlInResults = true;
+          return;
         }
-        buffer.rawdata[origin].ecoindex[originUrl][now] = item.score;
-        return;
       }
     }
-  } 
-  if ( xhr.status === 404 || (! foundUrlInResults && success) ) {
-    await rapidapiEcoindexSubmitAnalysis(origin,originUrl,now);
-    return;
+
+    if (status === 404 || (!foundUrlInResults && success)) {
+      await rapidapiEcoindexSubmitAnalysis(origin, originUrl, now);
+      return;
+    }
+
+    const text = await response.text();
+    console.warn(`${status} - ${response.statusText} : ${text}`);
+  } catch (err) {
+    console.error("Ecoindex retrieve request failed:", err);
   }
-  console.warn(xhr.status + " - " + xhr.statusText + " : " + xhr.responseText);
-}
+};
 
 const processing = {};
 // Take amount of data sent by the client in headers

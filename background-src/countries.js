@@ -3,20 +3,21 @@
  */
 
 // https://datahub.io/core/geo-countries#python
-const xhr = new XMLHttpRequest();
-xhr.open("GET","data/countries.geojson", false);
-xhr.overrideMimeType("text/plain");
-xhr.send();
-if ( xhr.status !== 200 ) {
-    throw "xhr failed " + xhr.status + " - " + xhr.statusText;
+let countriesObject = null;
+getCountriesObject = async () => {
+    if ( countriesObject == null ) {
+        const response = await fetch("data/countries.geojson");
+        if (!response.ok) throw new Error(`fetch failed ${response.status} - ${response.statusText}`);
+        countriesObject = await response.json();
+    }
+    return countriesObject
 }
-const countriesObject = JSON.parse(xhr.responseText);
 /**
  * Take ISO_A3 country code and return geomtry if found in the current definition.
  */
-getGeometryForCountry = (country) => {
+getGeometryForCountry = async (country) => {
     if (typeof(country) === "string") {
-        for(const feature of countriesObject.features) {
+        for(const feature of await getCountriesObject().features) {
             if ( feature.properties.ISO_A3 === country ) {
                 return feature.geometry;
             }
@@ -34,38 +35,51 @@ const countriesEUObject = {
     type: "FeatureCollection",
     features: []
 };
-const countriesEUFlattenMultiPolygon = [];
-for(const ISO_A3 of countriesEU_ISO_A3) {
-    for(const feature of countriesObject.features) {
-        if ( feature.properties.ISO_A3 === ISO_A3) {
-            countriesEUObject.features.push(feature);
-            if ( feature.geometry.type === "Polygon" ) {
-                countriesEUFlattenMultiPolygon.push(feature.geometry.coordinates);
-            } else if ( feature.geometry.type === "MultiPolygon" ) {
-                for(const polygon of feature.geometry.coordinates ) {
-                    countriesEUFlattenMultiPolygon.push(polygon);
+let countriesEUFlattenMultiPolygon = null;
+getCountriesEUFlattenMultiPolygon = async () => {
+    if ( countriesEUFlattenMultiPolygon == null ) {
+        countriesEUFlattenMultiPolygon = [];
+        countriesObject = await getCountriesObject();
+        for(const ISO_A3 of countriesEU_ISO_A3) {
+            for(const feature of countriesObject.features) {
+                if ( feature.properties.ISO_A3 === ISO_A3) {
+                    countriesEUObject.features.push(feature);
+                    if ( feature.geometry.type === "Polygon" ) {
+                        countriesEUFlattenMultiPolygon.push(feature.geometry.coordinates);
+                    } else if ( feature.geometry.type === "MultiPolygon" ) {
+                        for(const polygon of feature.geometry.coordinates ) {
+                            countriesEUFlattenMultiPolygon.push(polygon);
+                        }
+                    } else {
+                        throw "cannot merge a geometry of type " + feature.geometry.type;
+                    }
+                    break;
                 }
-            } else {
-                throw "cannot merge a geometry of type " + feature.geometry.type;
             }
-            break;
         }
     }
+    return countriesEUFlattenMultiPolygon;
 }
 /**
  * Holds all addressable space in EU.
  */
-const EUObjectUnified = {
-    type: "FeatureCollection",
-    features: [
-        {
-            type: "Feature",
-            properties: {
-            },
-            geometry: {
-              type: "MultiPolygon",
-              coordinates: countriesEUFlattenMultiPolygon
-            }
-        }
-    ]
-};
+let EUObjectUnified = null;
+getEUObjectUnified = async () => {
+    if ( EUObjectUnified == null ) {
+        EUObjectUnified = {
+            type: "FeatureCollection",
+            features: [
+                {
+                    type: "Feature",
+                    properties: {
+                    },
+                    geometry: {
+                    type: "MultiPolygon",
+                    coordinates: await getCountriesEUFlattenMultiPolygon()
+                    }
+                }
+            ]
+        };
+    }
+    return EUObjectUnified;
+}
