@@ -72,7 +72,7 @@ getCountriesObject = async () => {
  */
 getGeometryForCountry = async (country) => {
     if (typeof(country) === "string") {
-        for(const feature of await getCountriesObject().features) {
+        for(const feature of (await getCountriesObject()).features) {
             if ( feature.properties.ISO_A3 === country ) {
                 return feature.geometry;
             }
