@@ -356,18 +356,6 @@ storageGetAnalysisState = async () => {
 
 hide = element => element.classList.add('hidden');
 show = element => element.classList.remove('hidden');
-
-L_init = () => {
-
-}
-
-L_end = () => {
-
-}
-
-window.addEventListener("load", L_init);
-window.addEventListener("unload", L_end);
-
 // lib/carbonalyser/libPreferences.js
 
 printDebug = (msg) => {
