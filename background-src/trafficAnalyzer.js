@@ -365,7 +365,8 @@ sendHeadersListener = async (requestDetails) => {
 }
 
 setBrowserIcon = (type) => {
-  obrowser.action.setIcon({path: `icons/icon-${type}-48.png`});
+  const path = chrome.runtime.getURL(`icons/icon-${type}-48.png`);
+  obrowser.action.setIcon({path: path});
 };
 
 addOneMinute = async () => {

@@ -6,7 +6,8 @@
 let countriesObject = null;
 getCountriesObject = async () => {
     if ( countriesObject == null ) {
-        const response = await fetch("data/countries.geojson");
+        const url = chrome.runtime.getURL("data/countries.geojson");
+        const response = await fetch(url);
         if (!response.ok) throw new Error(`fetch failed ${response.status} - ${response.statusText}`);
         countriesObject = await response.json();
     }
