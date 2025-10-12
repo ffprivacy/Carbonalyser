@@ -27,7 +27,7 @@ To report a bug, request a feature, check [here](https://github.com/AAABBBCCCAAA
 #### Compatibility table
 | firefox  | firefox via github | chrome                | firefox for android |
 |:----------:|:------------------------:|:-------------------------:|:------------:|
-| [<img alt="firefox" width="40px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Firefox_logo.png/636px-Firefox_logo.png" />](https://addons.mozilla.org/fr/firefox/addon/carbonalyser-fork/)     | [<img alt="firefox via github" width="40px" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"/>](https://github.com/AAABBBCCCAAAA/Carbonalyser/releases) | dropped at the time | https://addons.mozilla.org/fr/firefox/collections/17360161/carbonalyser/ |
+| [<img alt="firefox" width="40px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Firefox_logo.png/636px-Firefox_logo.png" />](https://addons.mozilla.org/fr/firefox/addon/carbonalyser-fork/)     | [<img alt="firefox via github" width="40px" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"/>](https://github.com/AAABBBCCCAAAA/Carbonalyser/releases) | only from source | https://addons.mozilla.org/fr/firefox/collections/17360161/carbonalyser/ |
 #### Provided features
 - [x] browsing analysis history
 - [x] preference screen
