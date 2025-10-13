@@ -368,10 +368,11 @@ const tab = {
                         enabled: true,
                       },
                       drag: {
-                        enabled: true
+                        enabled: false
                       },
                       mode: 'x',
-                    }
+                    },
+                    pan: { enabled: true, mode: 'xy' }
                   }
                   
                 },
@@ -593,12 +594,12 @@ const tab = {
                         enabled: true,
                       },
                       drag: {
-                        enabled: true
+                        enabled: false
                       },
                       mode: 'x',
-                    }
+                    },
+                    pan: { enabled: true, mode: 'xy' }
                   }
-                  
                 },
                 scales: {
                   x: {
