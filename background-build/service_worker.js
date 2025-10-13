@@ -375,7 +375,7 @@ getOrCreatePreferences = async () => {
         } else {
             preferences = {
                 daemon: {
-                    runAtStart: {value: false, description: "wheter we should run analysis at browser start."},
+                    runAtStart: {value: true, description: "wheter we should run analysis at browser start."},
                     fetchCurrentLocation: {value: true, description: "should we attempt to fetch user location with 3rd party service, the value is reset to false when manual region selection have been done."},
                     storage: {
                         flushingIntervalMs: {value: 5000, description: "interval (ms) at which we write the storage"},
@@ -1285,20 +1285,25 @@ generateElectricityConsumptionFromBytes = async (bytesDataCenterObjectForm, byte
         }
         object.electricity.push({x: o.x, y: mWh});
       }
+      object.electricity.sort((a, b) => a.x - b.x);
     }
     return stats;
 }
 
 createStatsFromData = (rawdata, byOrigins=undefined) => {
-    const bytesDataCenterUnordered = createSumOfData(rawdata, 'datacenter', 60, byOrigins);
+    let bytesDataCenterUnordered = createSumOfData(rawdata, 'datacenter', 60, byOrigins);
     let bytesNetworkUnordered = createSumOfData(rawdata, 'network', 60, byOrigins);
     bytesNetworkUnordered = mergeTwoSOD(bytesDataCenterUnordered, bytesNetworkUnordered);
     fillSODGaps(bytesNetworkUnordered);
     fillSODGaps(bytesDataCenterUnordered);
+    bytesDataCenterUnordered = createObjectFromSumOfData(bytesDataCenterUnordered);
+    bytesNetworkUnordered = createObjectFromSumOfData(bytesNetworkUnordered);
+    bytesDataCenterUnordered.sort((a, b) => a.x - b.x);
+    bytesNetworkUnordered.sort((a, b) => a.x - b.x);
     return {
-        bytesDataCenterObjectForm: createObjectFromSumOfData(bytesDataCenterUnordered).sort((a,b) => a.x > b.x),
-        bytesNetworkObjectForm: createObjectFromSumOfData(bytesNetworkUnordered).sort((a,b) => a.x > b.x)
-    }  
+        bytesDataCenterObjectForm: bytesDataCenterUnordered,
+        bytesNetworkObjectForm: bytesNetworkUnordered
+    }
 }
 
 /**
