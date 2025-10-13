@@ -4,6 +4,24 @@ printDebug = (msg) => {
 }
 
 /**
+ * Guess the type of the data from string representation
+ */
+function preferencesGuessTypeFromStringValue(data) {
+  if (typeof data !== 'string') return typeof data;
+  const lower = data.trim().toLowerCase();
+  if (lower === 'true') return 'boolean';
+  if (lower === 'false') return 'boolean';
+  if (!isNaN(data) && data.trim() !== '') return 'number';
+  try {
+    const parsed = JSON.parse(data);
+    if (typeof parsed === 'boolean') return 'boolean';
+    if (typeof parsed === 'number') return 'number';
+    if (typeof parsed === 'string') return 'string';
+  } catch {}
+  return 'string';
+}
+
+/**
  * search for a given row in dtt.
  */
 DTTsearchEntry = (dtt, matcher, updateOnFound) => {
@@ -1185,7 +1203,22 @@ const tab = {
                 {   
                   data: 1,
                   render: function (data) {
-                       return '<div class="form-group"><input class="form-control" type="text" value="' + data + '" /></div>';
+                    let type = preferencesGuessTypeFromStringValue(data);
+                    let input;
+                    if ( type == "string" ) {
+                      input = '<input class="form-control" type="text" value="' + data + '" />';
+                    } else if ( type == "number" ) {
+                      input = '<input class="form-control" type="number" value=' + data + ' />';
+                    } else if ( type == "boolean" ) {
+                      input = " \
+                      <div class=\"form-check form-switch\"> \
+                        <input class=\"form-check-input\" type=\"checkbox\" " + (data == "true" ? "checked" : "") + "> \
+                      </div> \
+                      ";
+                    } else {
+                      return '<div>' + "Unsupported type of setting: " + type + '</div>'
+                    }
+                    return '<div class="form-group">' + input + '</div>';
                   }
                 },
                 { 
@@ -1210,7 +1243,11 @@ const tab = {
                   DTTsearchEntry(dtt, 
                     (rowData) => rowData[0] === data[0], 
                     (row,rowData) => {
-                      rowData[1] = event.target.value;
+                      if ( event.target.type == 'checkbox' ) {
+                        rowData[1] = event.target.checked;
+                      } else {
+                        rowData[1] = event.target.value;
+                      }
                       return rowData;
                     }
                   );
@@ -1231,15 +1268,15 @@ const tab = {
                 const row = dtt.row(rowId);
                 let rowData = row.data();
                 let value = rowData[1];
-                if ( typeof(value) === "string" ) {
-                  try {
-                    const res = JSON.parse(value);
-                    if ( typeof(res) !== "string" ) {
+                try {
+                  const res = JSON.parse(value);
+                  if ( typeof(res) !== "string" ) {
+                    if ( typeof(res) !== "object" ) {
                       value = res;
                     }
-                  } catch(error) {
-                    // do nothing
                   }
+                } catch(error) {
+                  // do nothing
                 }
                 IPIPrecurse(prefs, rowData[0], value);
               }
