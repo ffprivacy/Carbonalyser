@@ -703,6 +703,18 @@ const tab = {
                   },
                   title: {
                     display: false
+                  },
+                  zoom: {
+                    zoom: {
+                      wheel: {
+                        enabled: true,
+                      },
+                      drag: {
+                        enabled: false
+                      },
+                      mode: 'x',
+                    },
+                    pan: { enabled: true, mode: 'xy' }
                   }
                 },
                 scales: {
@@ -800,6 +812,18 @@ const tab = {
                   },
                   title: {
                     display: false
+                  },
+                  zoom: {
+                    zoom: {
+                      wheel: {
+                        enabled: true,
+                      },
+                      drag: {
+                        enabled: false
+                      },
+                      mode: 'x',
+                    },
+                    pan: { enabled: true, mode: 'xy' }
                   }
                 },
                 scales: {
