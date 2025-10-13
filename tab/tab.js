@@ -1210,11 +1210,11 @@ const tab = {
                     } else if ( type == "number" ) {
                       input = '<input class="form-control" type="number" value=' + data + ' />';
                     } else if ( type == "boolean" ) {
-                      input = " \
-                      <div class=\"form-check form-switch\"> \
-                        <input class=\"form-check-input\" type=\"checkbox\" " + (data == "true" ? "checked" : "") + "> \
-                      </div> \
-                      ";
+                      input = `
+                        <div class="form-check form-switch d-flex justify-content-center align-items-center" style="width: 100%; height: 100%;">
+                          <input class="form-check-input" type="checkbox" ${data == "true" ? "checked" : ""}>
+                        </div>
+                      `;
                     } else {
                       return '<div>' + "Unsupported type of setting: " + type + '</div>'
                     }
