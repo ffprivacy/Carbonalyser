@@ -346,6 +346,22 @@
                         </div>
                     </div>
                     <hr>
+                    <div class="row my-4">
+                        <div class="col-12 col-md-8">
+                            <label for="jsonDisplay" class="form-label">Sites settings</label>
+                            <textarea id="jsonDisplay" class="form-control font-monospace text-start"
+                                rows="14" spellcheck="false"
+                                autocorrect="off"
+                                autocapitalize="off"></textarea>
+                            <div class="mt-3 d-flex gap-2">
+                                <button id="validateJson" class="btn btn-primary">Update</button>
+                            </div>
+
+                            <div id="jsonError" class="mt-3 text-danger fw-bold" style="display:none;"></div>
+                            <div id="jsonSuccess" class="mt-3 text-success fw-bold" style="display:none;">Valid JSON ✅</div>
+                        </div>
+                    </div>
+                    <hr>
                 </div>  
             </div>
 
@@ -492,6 +508,7 @@
         <script src="/lib/bootstrap/bootstrap.min.js" ></script>
         <script src="/lib/carbonalyser/lib.js"></script>
         <script src="/lib/carbonalyser/libEquivalence.js"></script>
+        <script src="/lib/carbonalyser/libSitesModifier.js"></script>
         <script src="/lib/carbonalyser/libRegionSelect.js"></script>
         <script src="/lib/carbonalyser/libStats.js"></script>
         <script src="/lib/carbonalyser/libPreferences.js"></script>
