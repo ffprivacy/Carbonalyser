@@ -152,7 +152,7 @@ writeStats = async (rawdata) => {
   Object.assign(stats, createStatsFromData(rawdata));
 
   // electricity & electricity in attention time
-  Object.assign(stats, await generateElectricityConsumptionFromBytes(stats.bytesDataCenterObjectForm, stats.bytesNetworkObjectForm, duration));
+  Object.assign(stats, await generateElectricityConsumptionFromBytes(stats, duration));
 
   // update electricity of duration parts
   await updateDurationElectricity(duration);

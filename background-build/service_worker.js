@@ -369,10 +369,7 @@ let preferences = null;
 getOrCreatePreferences = async () => {
     if ( preferences === null || preferences === undefined ) {
         const prefText = (await obrowser.storage.local.get("pref")).pref;
-        if ( prefText !== undefined ) {
-            preferences = JSON.parse(prefText);
-            printDebug("getOrCreatePreferences: blocking read");
-        } else {
+        if ( prefText === undefined ) {
             preferences = {
                 daemon: {
                     runAtStart: {value: true, description: "wheter we should run analysis at browser start."},
@@ -464,6 +461,9 @@ getOrCreatePreferences = async () => {
             printDebug("getOrCreatePreferences: write preferences to storage");
             printDebug("getOrCreatePreferences: blocking write");
             obrowser.storage.local.set({pref: JSON.stringify(preferences)});
+        } else {
+            preferences = JSON.parse(prefText);
+            printDebug("getOrCreatePreferences: blocking read");
         }
     }
     return preferences;
@@ -561,6 +561,62 @@ LP_end = () => {
 }
 
 LP_init();
+// lib/carbonalyser/libSitesModifier.js
+let sitesModifier = null;
+getOrCreateSitesModifier = async () => {
+    if ( sitesModifier === null || sitesModifier === undefined ) {
+        const sitesModifierText = (await obrowser.storage.local.get("sitesModifier")).sitesModifier;
+        if ( sitesModifierText === undefined ) {
+            sitesModifier = {
+                "chatgpt.com": 10,
+                "google.com": 1
+            };
+        } else {
+            sitesModifier = JSON.parse(sitesModifierText);
+        }
+        obrowser.storage.local.set({sitesModifier: JSON.stringify(sitesModifier)});
+    }
+    return sitesModifier;
+}
+
+SMSetSite = async (url, energyModifier) => {
+    const host = extractHostname(url);
+    const sm = await getOrCreateSitesModifier();
+    sm[host] = energyModifier;
+    await obrowser.storage.local.set({sitesModifier: JSON.stringify(sm)});
+}
+SMSetSitesModifier = async (newSM) => {
+    sitesModifier = newSM;
+    await obrowser.storage.local.set({sitesModifier: JSON.stringify(sitesModifier)});
+}
+SMGetSiteModifier = async (url) => {
+    const host = extractHostname(url);
+    const sm = await getOrCreateSitesModifier();
+    if ( sm[host] === undefined ) {
+        return 1;
+    } else {
+        return sm[host];
+    }
+}
+
+listenerStorage = async (changes, areaName) => {
+    if ( areaName == "local" ) {
+        if ( changes["sitesModifier"] !== undefined ) {
+            sitesModifier = null;
+            sitesModifier = await getOrCreateSitesModifier(null);
+        }
+    }
+}
+
+SM_init = async () => {
+    obrowser.storage.onChanged.addListener(listenerStorage);
+}
+
+SM_end = () => {
+    obrowser.storage.onChanged.removeListener(listenerStorage);
+}
+
+SM_init();
 // lib/carbonalyser/libRegionSelect.js
 const DEFAULT_REGION = 'regionDefault';
 
@@ -1053,9 +1109,10 @@ createSumOfData = (rawdata, type, tsInterval=60, byOrigins=undefined) => {
                     ts = newTs;
                 }
                 if ( rv[ts] === undefined ) {
-                    rv[ts] = 0;
+                    rv[ts] = {dot: 0, origins: {}};
                 }
-                rv[ts] += rawdata[origin][type].dots[originalTS];
+                rv[ts].dot += rawdata[origin][type].dots[originalTS];
+                rv[ts].origins[origin] = (rv[ts].origins[origin] === undefined ? 0 : rv[ts].origins[origin]) + rawdata[origin][type].dots[originalTS];
             }
         }
     }
@@ -1071,11 +1128,11 @@ fillSODGaps = (sod, tsInterval=60*10) => {
     const keys = Object.keys(sod).sort((a,b) => a > b);
     for(let ts of keys) {
         if (previous !== undefined) {
-        const pratInterv = (ts - previous);
-        if ( pratInterv > tsInterval ) {
-            const newTs = parseInt(previous) + parseInt(Math.round(pratInterv/2));
-            sod[newTs] = 0;
-        }
+            const pratInterv = (ts - previous);
+            if ( pratInterv > tsInterval ) {
+                const newTs = parseInt(previous) + parseInt(Math.round(pratInterv/2));
+                sod[newTs] = {dot: 0, origins: {}};
+            }
         }
         previous = ts;
     }
@@ -1083,6 +1140,7 @@ fillSODGaps = (sod, tsInterval=60*10) => {
 
 // used to merge two sod (respecting interval constraint)
 // ts in seconds
+// the first SOD should be the datacenter bytes (to keep all origins)
 mergeTwoSOD = (sod1,sod2, tsInterval=60*10) => {
     tsInterval *= 1000;
     const keys = Object.keys(sod1);
@@ -1091,12 +1149,12 @@ mergeTwoSOD = (sod1,sod2, tsInterval=60*10) => {
         const tsOrigin = ts;
         const newTs = keys.find((a) => (ts-tsInterval) <= a && a <= (ts+tsInterval));
         if ( newTs !== undefined ) {
-        ts = newTs;
+            ts = newTs;
         }
         if ( result[ts] === undefined ) {
-        result[ts] = 0;
+            result[ts] = {dot: 0, origins: {}};
         } 
-        result[ts] += sod2[tsOrigin];
+        result[ts].dot += sod2[tsOrigin];
     }
     return result;
 }
@@ -1239,7 +1297,7 @@ compileXYdata = (columns, o1, o2, separator, newline) => {
 /**
  * Create electricity consumption from input bytes.
  */
-generateElectricityConsumptionFromBytes = async (bytesDataCenterObjectForm, bytesNetworkObjectForm, duration) => {
+generateElectricityConsumptionFromBytes = async (originStats, duration) => {
     const stats = {
         electricityDataCenterObjectForm: [],
         electricityNetworkObjectForm: []
@@ -1249,41 +1307,46 @@ generateElectricityConsumptionFromBytes = async (bytesDataCenterObjectForm, byte
     }
     for(const object of [
       {
-        bytes: bytesDataCenterObjectForm, 
+        bytes: originStats.bytesDataCenterObjectForm, 
         electricity: stats.electricityDataCenterObjectForm,
         pref: "general.kWhPerByteDataCenter"
       },
       {
-        bytes: bytesNetworkObjectForm, 
+        bytes: originStats.bytesNetworkObjectForm, 
         electricity: stats.electricityNetworkObjectForm,
         pref: "general.kWhPerByteNetwork"
       }
     ]) {
       for(const o of object.bytes) {
-        const kWh = o.y * (await getPref(object.pref));
-        const mWh = kWh * 1000000;
-        const minute = Math.trunc(((o.x)/1000)/60);
-        let key;
-        let passed = false;
-        for(key = minute-5; key < minute + 5; key += 1) {
-          const durationObj = duration.set[key];
-          if ( durationObj !== undefined ) {
-            durationObj.kWh += kWh;
-            passed = true;
-            break;
-          }
+        electricitymWh = 0;
+        for(const origin in Object.keys(o.y.origins)) {
+            const modifier = await SMGetSiteModifier(origin);
+            const kWh = o.y.origins[origin] * modifier * (await getPref(object.pref));
+            const mWh = kWh * 1000000;
+            const minute = Math.trunc(((o.x)/1000)/60);
+            let key;
+            let passed = false;
+            for(key = minute-5; key < minute + 5; key += 1) {
+                const durationObj = duration.set[key];
+                if ( durationObj !== undefined ) {
+                    durationObj.kWh += kWh;
+                    passed = true;
+                    break;
+                }
+            }
+            if ( ! passed ) {
+                key = minute;
+            }
+            if ( duration.set[key] === undefined ) {
+                passed = true;
+                duration.set[key] = {duration: 0, kWh: kWh};
+            }
+            if ( passed == false ) {
+                console.error("leaks", key, kWh, mWh);
+            }
+            electricitymWh += mWh;
         }
-        if ( ! passed ) {
-          key = minute;
-        }
-        if ( duration.set[key] === undefined ) {
-          passed = true;
-          duration.set[key] = {duration: 0, kWh: kWh};
-        }
-        if ( passed == false ) {
-          console.error("leaks", key, kWh, mWh);
-        }
-        object.electricity.push({x: o.x, y: mWh});
+        object.electricity.push({x: o.x, y: electricitymWh});
       }
       object.electricity.sort((a, b) => a.x - b.x);
     }
@@ -1764,7 +1827,7 @@ writeStats = async (rawdata) => {
   Object.assign(stats, createStatsFromData(rawdata));
 
   // electricity & electricity in attention time
-  Object.assign(stats, await generateElectricityConsumptionFromBytes(stats.bytesDataCenterObjectForm, stats.bytesNetworkObjectForm, duration));
+  Object.assign(stats, await generateElectricityConsumptionFromBytes(stats, duration));
 
   // update electricity of duration parts
   await updateDurationElectricity(duration);
