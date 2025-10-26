@@ -1168,28 +1168,6 @@ createObjectFromSumOfData = (sod) => {
     return rv;
 }
 
-// create moving average from the sum of datas (ordered)
-// tsInterval number of seconds of interval
-createMovingAverage = (sod, tsInterval=10) => {
-    let avgSum = 0;         // sum for average
-    const dots = [];        // dots for the graph
-    const stackedSums = []; // stack of sums
-  
-    for(let obj of sod) {
-      let ts = obj.x;
-      const cmp = ts - tsInterval;
-      avgSum += obj.y;
-      stackedSums.push(obj);
-  
-      while(stackedSums[0].x < cmp) {
-        avgSum -= stackedSums.shift().y;
-      }
-  
-      dots.push({x: ts, y: (avgSum/(stackedSums[stackedSums.length-1].x-stackedSums[0].x))});
-    }
-    return dots;
-}
-
 /**
  * Compile bytes into csv report.
  */
