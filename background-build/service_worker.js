@@ -1158,6 +1158,12 @@ mergeTwoSOD = (sod1,sod2, tsInterval=60*10) => {
             result[ts] = {dot: 0, origins: {}};
         } 
         result[ts].dot += sod2[tsOrigin].dot;
+        for(const origin in sod2[tsOrigin].origins) {
+            if ( result[ts].origins[origin] === undefined ) {
+                result[ts].origins[origin] = 0;
+            }
+            result[ts].origins[origin] += sod2[tsOrigin].origins[origin];
+        }
     }
     return result;
 }
