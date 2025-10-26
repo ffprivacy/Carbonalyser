@@ -1112,7 +1112,10 @@ createSumOfData = (rawdata, type, tsInterval=60, byOrigins=undefined) => {
                     rv[ts] = {dot: 0, origins: {}};
                 }
                 rv[ts].dot += rawdata[origin][type].dots[originalTS];
-                rv[ts].origins[origin] = (rv[ts].origins[origin] === undefined ? 0 : rv[ts].origins[origin]) + rawdata[origin][type].dots[originalTS];
+                if ( rv[ts].origins[origin] === undefined ) {
+                    rv[ts].origins[origin] = 0;
+                }
+                rv[ts].origins[origin] += rawdata[origin][type].dots[originalTS];
             }
         }
     }
