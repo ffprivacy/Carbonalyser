@@ -1307,9 +1307,11 @@ generateElectricityConsumptionFromBytes = async (originStats, duration) => {
     ]) {
       for(const o of object.bytes) {
         let electricitymWh = 0;
+        let bytesCheck = 0;
         for(const origin in o.y.origins) {
             const modifier = await SMGetSiteModifier(origin);
             const kWh = o.y.origins[origin] * modifier * (await getPref(object.pref));
+            bytesCheck += o.y.origins[origin];
             const mWh = kWh * 1000000;
             const minute = Math.trunc(((o.x)/1000)/60);
             let key;
@@ -1333,6 +1335,9 @@ generateElectricityConsumptionFromBytes = async (originStats, duration) => {
                 console.error("leaks", key, kWh, mWh);
             }
             electricitymWh += mWh;
+        }
+        if ( bytesCheck !== o.y.dot ) {
+            console.error("bytesCheck mismatch: expected: " + o.y.dot + " found: " + bytesCheck + " content=", o.y);
         }
         object.electricity.push({x: o.x, y: electricitymWh});
       }
