@@ -1306,8 +1306,8 @@ generateElectricityConsumptionFromBytes = async (originStats, duration) => {
       }
     ]) {
       for(const o of object.bytes) {
-        electricitymWh = 0;
-        for(const origin in Object.keys(o.y.origins)) {
+        let electricitymWh = 0;
+        for(const origin in o.y.origins) {
             const modifier = await SMGetSiteModifier(origin);
             const kWh = o.y.origins[origin] * modifier * (await getPref(object.pref));
             const mWh = kWh * 1000000;
