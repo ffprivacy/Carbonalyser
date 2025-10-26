@@ -370,7 +370,7 @@ const tab = {
                       drag: {
                         enabled: false
                       },
-                      mode: 'x',
+                      mode: 'xy',
                     },
                     pan: { enabled: true, mode: 'xy' }
                   }
@@ -596,7 +596,7 @@ const tab = {
                       drag: {
                         enabled: false
                       },
-                      mode: 'x',
+                      mode: 'xy',
                     },
                     pan: { enabled: true, mode: 'xy' }
                   }
