@@ -1,0 +1,5 @@
+createStatsFromData
+    compileBytes
+    compileElectricity
+    compileCO2equivalent
+        compileXYdata
