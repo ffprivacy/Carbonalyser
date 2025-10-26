@@ -4,6 +4,7 @@ lib/carbonalyser/countries.js
 background-src/countries.js
 lib/carbonalyser/lib.js
 lib/carbonalyser/libPreferences.js
+lib/carbonalyser/libSitesModifier.js
 lib/carbonalyser/libRegionSelect.js
 lib/carbonalyser/libEquivalence.js
 lib/carbonalyser/libStats.js
