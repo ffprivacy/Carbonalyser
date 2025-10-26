@@ -1170,6 +1170,13 @@ createObjectFromSumOfData = (sod) => {
     }
     return rv;
 }
+createXYDataFromObjectSumOfData = (sod) => {
+    const rv = [];
+    for(const object of sod) {
+        rv.push({x: object.x, y: object.y.dot});
+    }
+    return rv;
+}
 
 /**
  * Compile bytes into csv report.

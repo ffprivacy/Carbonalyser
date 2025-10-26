@@ -320,14 +320,14 @@ const tab = {
               datasets: [
                 {
                   label: translate("tab_history_data_consumptionOverTime_datacenterLabel"),
-                  data: root.stats.bytesDataCenterObjectForm,
+                  data: createXYDataFromObjectSumOfData(root.stats.bytesDataCenterObjectForm),
                   borderColor: 'rgb(255, 0, 0)',
                   showLine: true,
                   lineTension: 0.2,
                 },
                 {
                   label: translate("tab_history_data_consumptionOverTime_networkLabel"),
-                  data: root.stats.bytesNetworkObjectForm,
+                  data: createXYDataFromObjectSumOfData(root.stats.bytesNetworkObjectForm),
                   borderColor: 'rgb(0, 255, 0)',
                   showLine: true,
                   lineTension: 0.2
