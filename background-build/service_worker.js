@@ -1188,9 +1188,9 @@ createXYDataFromObjectSumOfData = (sod) => {
  * Compile bytes into csv report.
  */
  compileBytes = (rawdata, separator, byOrigins=undefined, newline) => {
-    const o = createStatsFromData(rawdata, byOrigins);
-    const o1 = o.bytesDataCenterObjectForm;
-    const o2 = o.bytesNetworkObjectForm;
+    const stats = createStatsFromData(rawdata, byOrigins);
+    const o1 = createXYDataFromObjectSumOfData(stats.bytesDataCenterObjectForm);
+    const o2 = createXYDataFromObjectSumOfData(stats.bytesNetworkObjectForm);
     return compileXYdata(["timestampMs","bytesDatacenter","bytesNetwork"], o1, o2, separator, newline);
 }
 
@@ -1198,11 +1198,11 @@ createXYDataFromObjectSumOfData = (sod) => {
  * Compile electricity into csv report.
  */
  compileElectricity = async (rawdata, separator, byOrigins=undefined, newline) => {
-    const o = createStatsFromData(rawdata, byOrigins);
+    const stats = createStatsFromData(rawdata, byOrigins);
     const duration = await getDuration();
-    const oo = await generateElectricityConsumptionFromBytes(o.bytesDataCenterObjectForm, o.bytesNetworkObjectForm, duration);
-    const o1 = oo.electricityDataCenterObjectForm;
-    const o2 = oo.electricityNetworkObjectForm;
+    const statsElectricityConsumption = await generateElectricityConsumptionFromBytes(stats, duration);
+    const o1 = statsElectricityConsumption.electricityDataCenterObjectForm;
+    const o2 = statsElectricityConsumption.electricityNetworkObjectForm;
     return compileXYdata(["timestampMs","mWhDatacenter","mWhNetwork"], o1, o2, separator, newline);
 }
 
@@ -1211,11 +1211,11 @@ createXYDataFromObjectSumOfData = (sod) => {
  */
 compileCO2equivalent = async (rawdata, separator, byOrigins=undefined, newline) => {
     const regions = await getRegions();
-    const o = createStatsFromData(rawdata, byOrigins);
+    const stats = createStatsFromData(rawdata, byOrigins);
     const duration = await getDuration();
-    const oo = await generateElectricityConsumptionFromBytes(o.bytesDataCenterObjectForm, o.bytesNetworkObjectForm, duration);
-    const o1 = oo.electricityDataCenterObjectForm; // mWh
-    const o2 = oo.electricityNetworkObjectForm; // mWh
+    const statsElectricityConsumption = await generateElectricityConsumptionFromBytes(stats, duration);
+    const o1 = statsElectricityConsumption.electricityDataCenterObjectForm; // mWh
+    const o2 = statsElectricityConsumption.electricityNetworkObjectForm; // mWh
     const ges = {
         network:  [],
         datacenter: []
