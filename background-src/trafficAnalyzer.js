@@ -220,16 +220,16 @@ headersReceivedListener = async (requestDetails) => {
   const origin = getOriginFromRequestDetail(requestDetails);
   const originUrl = getOriginUrlFromRequestDetail(requestDetails);
 
-  // Extract bytes from datacenters
-  const responseHeadersContentLength = requestDetails.responseHeaders.find(element => element.name.toLowerCase() === "content-length");
-  const contentLength = undefined === responseHeadersContentLength ? {value: 0}
-   : responseHeadersContentLength;
-  const requestSize = parseInt(contentLength.value, 10);
-
-  // Extract bytes from the network
   if ( isRestricted(originUrl) ) {
     // nothing todo
   } else {
+    // Extract bytes from datacenters
+    const responseHeadersContentLength = requestDetails.responseHeaders.find(element => element.name.toLowerCase() === "content-length");
+    const contentLength = undefined === responseHeadersContentLength ? {value: 0}
+    : responseHeadersContentLength;
+    const requestSize = parseInt(contentLength.value, 10);
+
+    // Extract bytes from the network
     const bnet = getBytesFromHeaders(requestDetails.responseHeaders);
     let originData = buffer.rawdata[origin];
     if ( originData === undefined ) {
@@ -237,6 +237,7 @@ headersReceivedListener = async (requestDetails) => {
     }
     originData.datacenter.total += requestSize;
     originData.network.total += bnet;
+    printDebug("inc origin=" + origin + " datacenter=" + requestSize + " network=" + bnet);
   }
 };
 
