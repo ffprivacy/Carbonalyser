@@ -1315,7 +1315,7 @@ generateElectricityConsumptionFromBytes = async (originStats, duration) => {
         let electricitymWh = 0;
         let bytesCheck = 0;
         for(const origin in o.y.origins) {
-            const modifier = await SMGetSiteModifier(origin);
+            const modifier = object.useEnergyModifier ? await SMGetSiteModifier(origin) : 1;
             const kWh = o.y.origins[origin] * modifier * (await getPref(object.pref));
             bytesCheck += o.y.origins[origin];
             const mWh = kWh * 1000000;
