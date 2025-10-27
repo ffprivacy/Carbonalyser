@@ -1192,7 +1192,7 @@ createXYDataFromObjectSumOfData = (sod) => {
  * Compile bytes into csv report.
  */
  compileBytes = (rawdata, separator, byOrigins=undefined, newline) => {
-    const stats = createStatsFromData(rawdata, byOrigins);
+    const stats = createDetailledStatsFromData(rawdata, byOrigins);
     const o1 = createXYDataFromObjectSumOfData(stats.bytesDataCenterObjectForm);
     const o2 = createXYDataFromObjectSumOfData(stats.bytesNetworkObjectForm);
     return compileXYdata(["timestampMs","bytesDatacenter","bytesNetwork"], o1, o2, separator, newline);
@@ -1202,7 +1202,7 @@ createXYDataFromObjectSumOfData = (sod) => {
  * Compile electricity into csv report.
  */
  compileElectricity = async (rawdata, separator, byOrigins=undefined, newline) => {
-    const stats = createStatsFromData(rawdata, byOrigins);
+    const stats = createDetailledStatsFromData(rawdata, byOrigins);
     const duration = await getDuration();
     const statsElectricityConsumption = await generateElectricityConsumptionFromBytes(stats, duration);
     const o1 = statsElectricityConsumption.electricityDataCenterObjectForm;
@@ -1215,7 +1215,7 @@ createXYDataFromObjectSumOfData = (sod) => {
  */
 compileCO2equivalent = async (rawdata, separator, byOrigins=undefined, newline) => {
     const regions = await getRegions();
-    const stats = createStatsFromData(rawdata, byOrigins);
+    const stats = createDetailledStatsFromData(rawdata, byOrigins);
     const duration = await getDuration();
     const statsElectricityConsumption = await generateElectricityConsumptionFromBytes(stats, duration);
     const o1 = statsElectricityConsumption.electricityDataCenterObjectForm; // mWh
@@ -1358,7 +1358,7 @@ generateElectricityConsumptionFromBytes = async (originStats, duration) => {
     return stats;
 }
 
-createStatsFromData = (rawdata, byOrigins=undefined) => {
+createDetailledStatsFromData = (rawdata, byOrigins=undefined) => {
     let bytesDataCenterUnordered = createSumOfData(rawdata, 'datacenter', 60, byOrigins);
     let bytesNetworkUnordered = createSumOfData(rawdata, 'network', 60, byOrigins);
     bytesNetworkUnordered = mergeTwoSOD(bytesDataCenterUnordered, bytesNetworkUnordered);
@@ -1829,7 +1829,7 @@ writeStats = async (rawdata) => {
   const duration = await getDuration();
 
   // data
-  Object.assign(stats, createStatsFromData(rawdata));
+  Object.assign(stats, createDetailledStatsFromData(rawdata));
 
   // electricity & electricity in attention time
   Object.assign(stats, await generateElectricityConsumptionFromBytes(stats, duration));

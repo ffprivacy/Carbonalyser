@@ -149,7 +149,7 @@ writeStats = async (rawdata) => {
   const duration = await getDuration();
 
   // data
-  Object.assign(stats, createStatsFromData(rawdata));
+  Object.assign(stats, createDetailledStatsFromData(rawdata));
 
   // electricity & electricity in attention time
   Object.assign(stats, await generateElectricityConsumptionFromBytes(stats, duration));
