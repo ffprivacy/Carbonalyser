@@ -1177,12 +1177,16 @@ createObjectFromSumOfData = (sod) => {
     return rv;
 }
 createXYDataFromObjectSumOfData = (sod) => {
-    const rv = [];
-    for(const object of sod) {
-        rv.push({x: object.x, y: object.y.dot});
-    }
-    return rv;
-}
+  const rv = [];
+  for (const object of sod) {
+    rv.push({
+      x: object.x,
+      y: object.y.dot,
+      origins: Object.keys(object.y.origins)
+    });
+  }
+  return rv;
+};
 
 /**
  * Compile bytes into csv report.
@@ -1347,7 +1351,7 @@ generateElectricityConsumptionFromBytes = async (originStats, duration) => {
         if ( bytesCheck !== o.y.dot ) {
             console.error("bytesCheck mismatch: expected: " + o.y.dot + " found: " + bytesCheck + " content=", o.y);
         }
-        object.electricity.push({x: o.x, y: electricitymWh});
+        object.electricity.push({x: o.x, y: electricitymWh, origins: Object.keys(o.y.origins) });
       }
       object.electricity.sort((a, b) => a.x - b.x);
     }

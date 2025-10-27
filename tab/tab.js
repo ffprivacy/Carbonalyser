@@ -355,6 +355,19 @@ const tab = {
                   legend: {
                     position: 'top',
                   },
+                  tooltip: {
+                    callbacks: {
+                      afterBody: function(context) {
+                        const point = context[0].raw;
+                        let originsText = "";
+                        for(const origin of point.origins) {
+                          originsText += origin + "\n";
+                        }
+                        originsText = originsText.replace(/\n$/,'');
+                        return originsText;
+                      }
+                    }
+                  },
                   title: {
                     display: false,
                     text: translate('tab_history_data_consumptionOverTime_title')
@@ -579,6 +592,19 @@ const tab = {
                 responsive: true,
                 animation: false,
                 plugins: {
+                  tooltip: {
+                    callbacks: {
+                      afterBody: function(context) {
+                        const point = context[0].raw;
+                        let originsText = "";
+                        for(const origin of point.origins) {
+                          originsText += origin + "\n";
+                        }
+                        originsText = originsText.replace(/\n$/,'');
+                        return originsText;
+                      }
+                    }
+                  },
                   legend: {
                     position: 'top',
                   },
