@@ -1489,6 +1489,12 @@ T_init = async () => {
     $("#refreshButton").on("click", animateRotationDummyButton);
   }
 
+  // tooltip for bootstrap
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
+
   obrowser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (message.action === 'recomputeStatsDone') {
       tab.stats = await getOrCreateStats();
