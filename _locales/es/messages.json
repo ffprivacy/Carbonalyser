@@ -320,11 +320,11 @@
       "message": "Generalización"
     },
     "tab_prediction_prediction_description": {
-      "message": "Con tu uso actual de internet, consumes $RATE$ kWh por día. A esta tarifa, su consumo total (computadora + operador de red + centro de datos) será de $POWER$ kWh por $DURATION$ días. Ten en cuenta que la previsión es inexacta si aún no has usado mucho la extensión (ejemplo después de una semana de uso reflejará perfectamente tu realidad pero justo después de instalar la extensión será aproximada).",
+      "message": "Con su uso actual de Internet, consume $RATE$ kWh, es decir, $GESDAY$ gCO2e por día. A este ritmo, su consumo total (ordenador + operador de red + centro de datos) será de $POWER$ kWh, $GESPRED$ tCO2e durante $DURATION$ días. Tenga en cuenta que la predicción no es precisa si aún no ha utilizado mucho la extensión (por ejemplo, después de una semana de uso reflejará perfectamente su realidad, pero justo después de instalar la extensión será aproximada).",
       "placeholders": {
-        "power" : {
-          "content" : "$1",
-          "example" : "10"
+        "power": {
+          "content": "$1",
+          "example": "10"
         },
         "duration": {
           "content": "$2",
@@ -333,6 +333,14 @@
         "rate": {
           "content": "$3",
           "example": "1"
+        },
+        "gesday": {
+          "content": "$4",
+          "example": "0.5"
+        },
+        "gespred": {
+          "content": "$5",
+          "example": "2.3"
         }
       }
     },

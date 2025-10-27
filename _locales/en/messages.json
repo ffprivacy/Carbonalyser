@@ -320,11 +320,11 @@
     "message": "Generalization"
   },
   "tab_prediction_prediction_description": {
-    "message": "With your current internet usage, you are consuming $RATE$ kWh per day. At this rate your total consumption (computer + network operator + datacenter) will be $POWER$ kWh for $DURATION$ days. Keep in mind that the forecast is inaccurate if you haven't used the extension much yet (example after a week of use it will perfectly reflect your reality but just after installing the extension it will be approximate).",
+    "message": "With your current internet usage, you consume $RATE$ kWh, which equals $GESDAY$ gCO2e per day. At this rate, your total consumption (computer + network operator + data center) will be $POWER$ kWh, $GESPRED$ tCO2e over $DURATION$ days. Keep in mind that the prediction is inaccurate if you haven’t used the extension much yet (for example, after a week of use it will accurately reflect your reality, but just after installing the extension it will be approximate).",
     "placeholders": {
-      "power" : {
-        "content" : "$1",
-        "example" : "10"
+      "power": {
+        "content": "$1",
+        "example": "10"
       },
       "duration": {
         "content": "$2",
@@ -333,6 +333,14 @@
       "rate": {
         "content": "$3",
         "example": "1"
+      },
+      "gesday": {
+        "content": "$4",
+        "example": "0.5"
+      },
+      "gespred": {
+        "content": "$5",
+        "example": "2.3"
       }
     }
   },

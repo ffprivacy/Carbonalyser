@@ -922,18 +922,21 @@ const tab = {
         },
         update: async function() {
           const root = this.parent.parent.parent;
+          const regions = await getRegions();
           const yearCompare = await getPref("tab.forecast.compareYear.value");
           const yearCompareElectricityTWh = await getPref("tab.forecast.compareYear.electricity.total.TWh");
           const yearCompareElectricityTeckPercent = await getPref("tab.forecast.compareYear.electricity.teck.percent");
           const yearCompareElectricityTechTWh = yearCompareElectricityTWh * yearCompareElectricityTeckPercent;
           const dayRateKWh = root.stats.forecast.dayRateKWh;
           const days = this.data.days;
+          const dayRategCO2e = regions[DEFAULT_REGION].carbonIntensity * dayRateKWh;
           const forecastedKWh = dayRateKWh * days;
+          const forecastedtCO2e = dayRategCO2e * days / 1000;
           const people = (await getPref("general.population.number"));
           const percentInternet = await getPref("general.population.internetPercent");
           const peopleInternet = people * percentInternet;
           const extrapolateTWhPeopleInternet = (forecastedKWh * peopleInternet) / 1000000000;
-          this.div.textContent = obrowser.i18n.getMessage('tab_prediction_prediction_description', [forecastedKWh.toFixed(5), days, dayRateKWh.toFixed(5)]);
+          this.div.textContent = obrowser.i18n.getMessage('tab_prediction_prediction_description', [forecastedKWh.toFixed(5), days, dayRateKWh.toFixed(5), dayRategCO2e.toFixed(2), forecastedtCO2e.toFixed(2)]);
           this.divGlobalPop.textContent = obrowser.i18n.getMessage('tab_prediction_prediction_global_pop', [peopleInternet, days, extrapolateTWhPeopleInternet.toFixed(1), (percentInternet * 100).toFixed(1), yearCompare, yearCompareElectricityTWh, (yearCompareElectricityTeckPercent * 100).toFixed(1), yearCompareElectricityTechTWh]);
         }
       }
