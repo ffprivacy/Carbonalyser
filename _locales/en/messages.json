@@ -350,8 +350,29 @@
   "tab_prediction_prediction_button": {
     "message": "Validate"
   },
+  "tab_prediction_prediction_global_pop2": {
+    "message": "Emissions in $YEAR$ were $GESTOTAL$ GtCO2eq, with $GESPERCENTTECK$% attributed to the digital sector, i.e., $GESTECK$ GtCO2e.",
+    "placeholders": {
+      "year": {
+        "content": "$1",
+        "example": "2022"
+      },
+      "gestotal": {
+        "content": "$2",
+        "example": "57.4"
+      },
+      "gespercentteck": {
+        "content": "$3",
+        "example": "3.4"
+      },
+      "gesteck": {
+        "content": "$4",
+        "example": "57.4"
+      }
+    }
+  },
   "tab_prediction_prediction_global_pop": {
-    "message": "If every Internet user consumed like you, the overall electricity consumption (for $PEOPLE$ people for $DAYS$ days) would be at least $POWER$ TWh. To give you an idea of ​​comparison of the real world electricity consumption in $YEAR$ is about $ELECTRICITYTWHYEAR$ TWh of which $ELECTRICITYPERCENTTECK$% say to new technologies (therefore $TERAWATTTECK$ TWh) and that for $NETPEOPLEPERCENT$% of the world's population. If the carbonalyser measurement is greater than $TERAWATTTECK$ TWh you can be sure that your electricity usage is higher than other internet users. If it is lower, you consume at least at this level, but keep in mind that carbonalysing underestimates the datacenters + routing infrastructure segment.",
+    "message": "If every internet user consumed like you, the total global electricity consumption (for $PEOPLE$ people over $DAYS$ days) would be at least $POWER$ TWh, and emissions would reach at least $GESPEOPLE$ GtCO2e. For comparison, the real global electricity consumption in $YEAR$ is about $ELECTRICITYTWHYEAR$ TWh, of which $ELECTRICITYPERCENTTECK$% is allocated to new technologies (i.e., $TERAWATTTECK$ TWh), covering $NETPEOPLEPERCENT$% of the world’s population. If the Carbonalyser estimate is higher than $TERAWATTTECK$ TWh, you can be sure your electricity use is above average. If it’s lower, you consume at least around that level, but keep in mind that Carbonalyser underestimates the data center and network infrastructure segments.",
     "placeholders": {
       "people": {
         "content": "$1",
@@ -384,6 +405,10 @@
       "terawattteck": {
         "content": "$8",
         "example": "2200"
+      },
+      "gespeople": {
+        "content": "$9",
+        "example": "2.5"
       }
     }
   },

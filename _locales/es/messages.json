@@ -350,8 +350,29 @@
     "tab_prediction_prediction_button": {
       "message": "Validar"
     },
+    "tab_prediction_prediction_global_pop2": {
+      "message": "Las emisiones en $YEAR$ fueron de $GESTOTAL$ GtCO2eq, de las cuales el $GESPERCENTTECK$% correspondieron al sector digital, es decir, $GESTECK$ GtCO2e.",
+      "placeholders": {
+        "year": {
+          "content": "$1",
+          "example": "2022"
+        },
+        "gestotal": {
+          "content": "$2",
+          "example": "57.4"
+        },
+        "gespercentteck": {
+          "content": "$3",
+          "example": "3.4"
+        },
+        "gesteck": {
+          "content": "$4",
+          "example": "57.4"
+        }
+      }
+    },
     "tab_prediction_prediction_global_pop": {
-      "message": "Si todos los usuarios de Internet consumieran como usted, el consumo total de electricidad (para $PEOPLE$ personas durante $DAYS$ días) sería de al menos $POWER$ TWh. Para darle una idea de la comparación del consumo de electricidad en el mundo real en $YEAR$ se trata de $ELECTRICITYTWHYEAR$ TWh de los cuales $ELECTRICITYPERCENTTECK$% corresponden a nuevas tecnologías (por lo tanto $TERAWATTTECK$ TWh) y que para $NETPEOPLEPERCENT$% de La población mundial. Si la medición del carbonalyser es superior a $TERAWATTTECK$ TWh, puede estar seguro de que su consumo de electricidad es superior al de otros usuarios de Internet. Si es más bajo, consume al menos a este nivel, pero tenga en cuenta que el carbonalysing subestima el segmento de infraestructura de enrutamiento de centros de datos.",
+      "message": "Si cada internauta consumiera como usted, el consumo global de electricidad (para $PEOPLE$ personas durante $DAYS$ días) sería de al menos $POWER$ TWh y las emisiones de al menos $GESPEOPLE$ GtCO2e. Para darle una idea de comparación, el consumo mundial real de electricidad en $YEAR$ es de aproximadamente $ELECTRICITYTWHYEAR$ TWh, de los cuales el $ELECTRICITYPERCENTTECK$% se destina a las nuevas tecnologías (es decir, $TERAWATTTECK$ TWh), y esto para el $NETPEOPLEPERCENT$% de la población mundial. Si la medición de Carbonalyser es mayor que $TERAWATTTECK$ TWh, puede estar seguro de que su uso de electricidad es más alto que el promedio de los internautas. Si es menor, consume al menos a ese nivel, pero tenga en cuenta que Carbonalyser subestima el segmento de centros de datos e infraestructura de red.",
       "placeholders": {
         "people": {
           "content": "$1",
@@ -384,6 +405,10 @@
         "terawattteck": {
           "content": "$8",
           "example": "2200"
+        },
+        "gespeople": {
+          "content": "$9",
+          "example": "2.5"
         }
       }
     },
