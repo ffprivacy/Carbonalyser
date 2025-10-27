@@ -358,7 +358,7 @@ const tab = {
                   tooltip: {
                     callbacks: {
                       label: function(context) {
-                        return context.raw.y + ' bytes';
+                        return context.raw.y + ' ' + translate('tab_history_data_consumptionOverTime_y_axis_popup_unit');
                       },
                       afterBody: function(context) {
                         const point = context[0].raw;

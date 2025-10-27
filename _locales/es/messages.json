@@ -235,6 +235,9 @@
     "tab_history_data_consumptionOverTime_networkLabel": {
       "message": "Datos utilizados en la red"
     },
+    "tab_history_data_consumptionOverTime_y_axis_popup_unit": {
+      "message": "bytes"
+    },
     "tab_history_data_consumptionShareAmongSites_sitesShareDatasetLabel": {
       "message": "Distribución de datos entre sitios"
     },

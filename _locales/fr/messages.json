@@ -235,6 +235,9 @@
   "tab_history_data_consumptionOverTime_networkLabel": {
     "message": "Données utilisées sur le réseau"
   },
+  "tab_history_data_consumptionOverTime_y_axis_popup_unit": {
+    "message": "octets"
+  },
   "tab_history_data_consumptionShareAmongSites_sitesShareDatasetLabel": {
     "message": "Répartition de la donnée entre les sites"
   },
