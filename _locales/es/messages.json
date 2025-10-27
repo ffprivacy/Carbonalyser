@@ -313,6 +313,12 @@
     "tab_prediction": {
       "message": "Pronóstico"
     },
+    "tab_prediction_prediction_description_title": {
+      "message": "Predicción"
+    },
+    "tab_prediction_prediction_global_pop_title": {
+      "message": "Generalización"
+    },
     "tab_prediction_prediction_description": {
       "message": "Con tu uso actual de internet, consumes $RATE$ kWh por día. A esta tarifa, su consumo total (computadora + operador de red + centro de datos) será de $POWER$ kWh por $DURATION$ días. Ten en cuenta que la previsión es inexacta si aún no has usado mucho la extensión (ejemplo después de una semana de uso reflejará perfectamente tu realidad pero justo después de instalar la extensión será aproximada).",
       "placeholders": {
