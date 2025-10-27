@@ -1026,7 +1026,7 @@ setParameters = async (parameters) => {
 /**
  * Create stats from the raw data.
  */
-getStats = async (rawdata) => {
+getHeadingStats = async (rawdata) => {
     if ( rawdata === undefined ) {
         rawdata = await getOrCreateRawData();
     }
@@ -1824,7 +1824,7 @@ writeStats = async (rawdata) => {
     rawdata = await getOrCreateRawData();
   }
   stats = getEmptyStatsObject();
-  stats.stats = await getStats(rawdata);
+  stats.stats = await getHeadingStats(rawdata);
   stats.equivalence = await computeEquivalenceFromStatsItem(stats.stats);
   const duration = await getDuration();
 

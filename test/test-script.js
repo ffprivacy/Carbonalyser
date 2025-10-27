@@ -71,7 +71,7 @@ var injectEquivalentIntoHTML, getEmptyEquivalenceObject, computeEquivalenceFromS
 simplerRequire('../lib/carbonalyser/libEquivalence.js');
 var injectRegionIntoHTML, selectRegionHandler, getSelectedRegion, setSelectedRegion;
 simplerRequire('../lib/carbonalyser/libRegionSelect.js');
-var init, getOrCreateRawData, createEmptyRawData, setCarbonIntensityRegion, LS_init, LS_end, incBytesPerOrigin, incBytesDataCenter, incBytesNetwork, setRegion, getCarbonIntensityRegion, getParameters, capitalizeFirstLetter, lowerFirstLetter, getRegions, setParameters, getStats, toMegaByteNoRound, toMegaByte, toMebiByte;
+var init, getOrCreateRawData, createEmptyRawData, setCarbonIntensityRegion, LS_init, LS_end, incBytesPerOrigin, incBytesDataCenter, incBytesNetwork, setRegion, getCarbonIntensityRegion, getParameters, capitalizeFirstLetter, lowerFirstLetter, getRegions, setParameters, getHeadingStats, toMegaByteNoRound, toMegaByte, toMebiByte;
 simplerRequire('../lib/carbonalyser/libStats.js');
 var getOrCreatePreferences, ensureEntry, LP_init, LP_end, getPref, setPref, listenerStorage, injectPreferencesIntoHTML, createEntry, IPIrecurse, IPIPrecurse;
 simplerRequire('../lib/carbonalyser/libPreferences.js');
@@ -217,7 +217,7 @@ describe('getOrCreateRawData', function() {
     });
 });
 
-describe('getStats', function() {
+describe('getHeadingStats', function() {
     return; // TODO
     this.beforeEach(function (done) {
         //reset local storage before each test to make independant tests
@@ -231,7 +231,7 @@ describe('getStats', function() {
         await incBytesDataCenter(d1, 2);
         await incBytesDataCenter(d2, 3);
         const storage = await getOrCreateRawData();
-        const stats = (await getStats()).highestStats.slice(0, 1);
+        const stats = (await getHeadingStats()).highestStats.slice(0, 1);
         stats.totalDataCenter.should.equals(6);
         stats.total.should.equals(stats.totalDataCenter);
         stats.highestStats.length.should.equals(2);

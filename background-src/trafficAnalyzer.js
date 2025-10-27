@@ -144,7 +144,7 @@ writeStats = async (rawdata) => {
     rawdata = await getOrCreateRawData();
   }
   stats = getEmptyStatsObject();
-  stats.stats = await getStats(rawdata);
+  stats.stats = await getHeadingStats(rawdata);
   stats.equivalence = await computeEquivalenceFromStatsItem(stats.stats);
   const duration = await getDuration();
 

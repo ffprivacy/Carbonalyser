@@ -453,7 +453,7 @@ const tab = {
             series: null,
           },
           init: async function () {
-            const topStats = (await getStats()).highestStats.slice(0, 100);
+            const topStats = (await getHeadingStats()).highestStats.slice(0, 100);
             this.data.labels = [];
             this.data.series = [];
             for (const stat of topStats) {
