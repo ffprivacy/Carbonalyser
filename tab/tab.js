@@ -1382,14 +1382,14 @@ const tab = {
         },
         injectIntoHTML: async function() {
           const sm = await getOrCreateSitesModifier();
-          document.getElementById('jsonDisplay').value = JSON.stringify(sm, null, 4);
+          document.getElementById('tab_settings_sites_entry').value = JSON.stringify(sm, null, 4);
         },
         init: async function() {
           $(document).ready(async () => {
-            document.getElementById('validateJson').onclick = async () => {
-              const jsonText = document.getElementById('jsonDisplay').value;
-              const errorMsg = document.getElementById('jsonError');
-              const successMsg = document.getElementById('jsonSuccess');
+            document.getElementById('tab_settings_sites_validate').onclick = async () => {
+              const jsonText = document.getElementById('tab_settings_sites_entry').value;
+              const errorMsg = document.getElementById('tab_settings_sites_error');
+              const successMsg = document.getElementById('tab_settings_sites_success');
               errorMsg.style.display = 'none';
               successMsg.style.display = 'none';
               try {
@@ -1397,7 +1397,7 @@ const tab = {
                 await SMSetSitesModifier(parsed);
                 successMsg.style.display = 'block';
               } catch (e) {
-                errorMsg.textContent = 'Invalid JSON: ' + e.message;
+                errorMsg.textContent = 'Invalid site settings: ' + e.message;
                 errorMsg.style.display = 'block';
               }
             }
