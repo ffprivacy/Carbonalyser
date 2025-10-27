@@ -927,6 +927,10 @@ const tab = {
           const yearCompareElectricityTWh = await getPref("tab.forecast.compareYear.electricity.total.TWh");
           const yearCompareElectricityTeckPercent = await getPref("tab.forecast.compareYear.electricity.teck.percent");
           const yearCompareElectricityTechTWh = yearCompareElectricityTWh * yearCompareElectricityTeckPercent;
+          const yearCompareGESGt = 57.4;
+          const yearCompareGESGtTeckPercent = 0.034;
+          const yearCompareGESGtTeck = yearCompareGESGt * yearCompareGESGtTeckPercent;
+
           const dayRateKWh = root.stats.forecast.dayRateKWh;
           const days = this.data.days;
           const dayRategCO2e = regions[DEFAULT_REGION].carbonIntensity * dayRateKWh;
@@ -936,8 +940,9 @@ const tab = {
           const percentInternet = await getPref("general.population.internetPercent");
           const peopleInternet = people * percentInternet;
           const extrapolateTWhPeopleInternet = (forecastedKWh * peopleInternet) / 1000000000;
+          const extrapolateGESGtPeopleInternet = (forecastedtCO2e * peopleInternet) / 1000000000;
           this.div.textContent = obrowser.i18n.getMessage('tab_prediction_prediction_description', [forecastedKWh.toFixed(5), days, dayRateKWh.toFixed(5), dayRategCO2e.toFixed(2), forecastedtCO2e.toFixed(2)]);
-          this.divGlobalPop.textContent = obrowser.i18n.getMessage('tab_prediction_prediction_global_pop', [peopleInternet, days, extrapolateTWhPeopleInternet.toFixed(1), (percentInternet * 100).toFixed(1), yearCompare, yearCompareElectricityTWh, (yearCompareElectricityTeckPercent * 100).toFixed(1), yearCompareElectricityTechTWh]);
+          this.divGlobalPop.textContent = obrowser.i18n.getMessage('tab_prediction_prediction_global_pop', [peopleInternet, days, extrapolateTWhPeopleInternet.toFixed(1), (percentInternet * 100).toFixed(1), yearCompare, yearCompareElectricityTWh, (yearCompareElectricityTeckPercent * 100).toFixed(1), yearCompareElectricityTechTWh, extrapolateGESGtPeopleInternet.toFixed(1), yearCompareGESGt.toFixed(2), (yearCompareGESGtTeckPercent * 100).toFixed(2), yearCompareGESGtTeck.toFixed(2)]);
         }
       }
     }
