@@ -1432,6 +1432,11 @@ animateRotationButton = async (done) => {
   a.button = $("#refreshButton > img");
   a.start();
 }
+animateRotationDummyButton = async (done) => {
+  const a = rotateAnimationDummy.newInstance();
+  a.button = $("#refreshButton > img");
+  a.start();
+}
 
 let lastUpdate = null;
 let storageChangedTimeout = null;
@@ -1457,9 +1462,7 @@ handleStorageChanged = async (changes, areaName) => {
       if ( await getPref("tab.animate") ) {
         $("#refreshButton").on("click", animateRotationButton);
       } else {
-        $("#refreshButton").on("click", async () => {{
-          await tab.update();
-        }});
+        $("#refreshButton").on("click", animateRotationDummyButton);
       }
     }
 
@@ -1492,9 +1495,7 @@ T_init = async () => {
   if ( await getPref("tab.animate") ) {
     $("#refreshButton").on("click", animateRotationButton);
   } else {
-    $("#refreshButton").on("click", async () => {{
-      await tab.update();
-    }});
+    $("#refreshButton").on("click", animateRotationDummyButton);
   }
 
   obrowser.storage.onChanged.addListener(handleStorageChanged);
