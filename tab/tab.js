@@ -323,14 +323,16 @@ const tab = {
                   data: createXYDataFromObjectSumOfData(root.stats.bytesDataCenterObjectForm),
                   borderColor: 'rgb(255, 0, 0)',
                   showLine: true,
-                  lineTension: 0.2,
+                  lineTension: 0,
+                  tension: 0
                 },
                 {
                   label: translate("tab_history_data_consumptionOverTime_networkLabel"),
                   data: createXYDataFromObjectSumOfData(root.stats.bytesNetworkObjectForm),
                   borderColor: 'rgb(0, 255, 0)',
                   showLine: true,
-                  lineTension: 0.2
+                  lineTension: 0,
+                  tension: 0
                 }
               ]
             };
@@ -550,14 +552,16 @@ const tab = {
                   data: root.stats.electricityDataCenterObjectForm,
                   borderColor: 'rgb(255, 0, 0)',
                   showLine: true,
-                  lineTension: 0.2,
+                  lineTension: 0,
+                  tension: 0
                 },
                 {
                   label: translate("tab_history_electricity_overTime_datasetNetwork"),
                   data: root.stats.electricityNetworkObjectForm,
                   borderColor: 'rgb(0, 255, 0)',
                   showLine: true,
-                  lineTension: 0.2,
+                  lineTension: 0,
+                  tension: 0
                 }
               ]
             };
