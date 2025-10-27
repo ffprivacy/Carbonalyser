@@ -112,6 +112,24 @@
   "results_export_origin_title": {
     "message": "Liste de sites séparés par une virgule sur lesquels vous voulez restreindre l'export (regex autorisées):"
   },
+  "tab_results_topResults_electricity_datacenter": {
+    "message": "Electricité consommée par le centre de données ($UNIT$)",
+    "placeholders": {
+      "unit" : {
+        "content" : "$1",
+        "example" : "mWh"
+      }
+    }
+  },
+  "tab_results_topResults_electricity_network": {
+    "message": "Electricité consommée par l'infrastructure réseau ($UNIT$)",
+    "placeholders": {
+      "unit" : {
+        "content" : "$1",
+        "example" : "mWh"
+      }
+    }
+  },
   "selectRegionPlaceholder": {
     "message": "Sélectionnez votre zone géographique"
   },

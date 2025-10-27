@@ -112,6 +112,24 @@
   "results_export_origin_title": {
     "message": "Comma separated list of sites on which to restrict export (regex allowed):"
   },
+  "tab_results_topResults_electricity_datacenter": {
+    "message": "Electricity consumed by the data center ($UNIT$)",
+    "placeholders": {
+      "unit": {
+        "content": "$1",
+        "example": "mWh"
+      }
+    }
+  },
+  "tab_results_topResults_electricity_network": {
+    "message": "Electricity consumed by the network infrastructure ($UNIT$)",
+    "placeholders": {
+      "unit": {
+        "content": "$1",
+        "example": "mWh"
+      }
+    }
+  },
   "selectRegionPlaceholder": {
     "message": "Select your location"
   },

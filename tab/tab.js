@@ -240,7 +240,12 @@ const tab = {
             this.data.dtt.row.add(tr).draw();
           }
         },
+        injectUnitUpdatedTranslation: async function () {
+          document.getElementById('resultsRightColumn_topResults_electricity_datacenter').textContent = "" + obrowser.i18n.getMessage('tab_results_topResults_electricity_datacenter', [await getPref("general.electricityUnit")]);
+          document.getElementById('resultsRightColumn_topResults_electricity_network').textContent = "" + obrowser.i18n.getMessage('tab_results_topResults_electricity_network', [await getPref("general.electricityUnit")]);
+        },
         init: async function () {
+          await this.injectUnitUpdatedTranslation();
           // Add some sorters
           $(document).ready(async () => {
             this.data.dtt = $('#topResultsTable').DataTable({
@@ -257,7 +262,9 @@ const tab = {
                 },
                 { data: 2 },
                 { data: 3 },
-                { data: 4 }
+                { data: 4 },
+                { data: 5 },
+                { data: 6 }
               ]
             });
             this.data.dtt.on("init", function() {
@@ -271,6 +278,7 @@ const tab = {
           });
         },
         update: async function () {
+          await this.injectUnitUpdatedTranslation();
           const root = this.parent.parent.parent;
           if ( root.stats.stats.highestStats.length == 0 ) {
             this.data.dtt.clear().draw();
