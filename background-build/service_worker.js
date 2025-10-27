@@ -676,7 +676,7 @@ setSelectedRegion = async (r) => {
  * inject the computed equivalence into HTML.
  */
 injectEquivalentIntoHTML = async (stats, computedEquivalence) => {
-    const megaByteTotal = toMegaByte(stats.total);
+    const megaByteTotal = toMegaByte(stats.totalBytes);
     const electricityUnitText = await getPref("general.electricityUnit");
     const electricityConverted = (await electricityConvertFromUnitTo(computedEquivalence.kWhTotal, "kWh")).toFixed(3).toString().replace(/\.?0*$/,"");
     const cigarette = computedEquivalence.gCO2Total / (await getPref("general.equivalence.cigarette"));
