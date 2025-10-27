@@ -195,6 +195,8 @@ const tab = {
 
           let foundValue = false;
           if ( ! init ) {
+            const dcconvertFactor = await electricityConvertFromUnitTo(await getPref("general.kWhPerByteDataCenter"), "kWh");
+            const ntconvertFactor = await electricityConvertFromUnitTo(await getPref("general.kWhPerByteNetwork"), "kWh");
             foundValue = DTTsearchEntry(this.data.dtt, 
               (rowData) => rowData[1] === stat.origin, 
               (row,rowData) => {
@@ -203,7 +205,9 @@ const tab = {
                 rowData[0] = stat.percent;
                 rowData[2] = toMegaByteNoRound(dataOrigin.datacenter.total);
                 rowData[3] = toMegaByteNoRound(dataOrigin.network.total + dataOrigin.datacenter.total);
-                rowData[4] = this.getAverageEcoIndex(dataOrigin.ecoindex);
+                rowData[4] = (dcconvertFactor * dataOrigin.datacenter.total).toFixed(3).toString().replace(/\.?0*$/,"");
+                rowData[5] = (ntconvertFactor * (dataOrigin.network.total + dataOrigin.datacenter.total)).toFixed(3).toString().replace(/\.?0*$/,"");
+                rowData[6] = this.getAverageEcoIndex(dataOrigin.ecoindex);
                 row.data(rowData).draw();
                 return rowData;
               }
