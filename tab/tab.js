@@ -1212,7 +1212,8 @@ const tab = {
           table: null,
           editing: false,
           editingTMO: null,
-          dtt: null
+          dtt: null,
+          page: 0
         },
         stopEditing: function() {
           if ( this.data.editingTMO != null ) {
@@ -1347,8 +1348,15 @@ const tab = {
                 });
               }
             });
+            const _this = this;
             dtt.on("init", function() {
               document.getElementById("prefsTable_wrapper").style.width = "100%";
+              const wrapper = document.getElementById('prefsTable_wrapper');
+              wrapper.addEventListener('click', async (e) => {
+                if (e.target.classList.contains('paginate_button')) {
+                  _this.data.page = _this.data.dtt.page();
+                }
+              });
             });
             this.data.dtt = dtt;
             await this.injectPreferencesIntoHTML(true);
@@ -1397,6 +1405,7 @@ const tab = {
         },
         update: async function() {
           await this.injectPreferencesIntoHTML(false);
+            this.data.dtt.page(this.data.page).draw('page');
         }
       }
     }
