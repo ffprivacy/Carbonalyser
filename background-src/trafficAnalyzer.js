@@ -440,9 +440,15 @@ handleMessage = async (request) => {
       }
       await storageSetAnalysisState(0);
       break;
+    case 'recomputeStats':
+      printDebug("trafficAnalyzer: recomputeStats");
+      await writeStats();
+      obrowser.runtime.sendMessage({action: 'recomputeStatsDone'});
+      return;
+    case 'recomputeStatsDone':
     case 'reinitCIUpdater':
     case 'forceCIUpdater':
-      // orders coming for other scripts.
+      // orders coming or for other scripts.
       break;
     default:
       printDebug("Unknow order");

@@ -1498,6 +1498,13 @@ T_init = async () => {
     $("#refreshButton").on("click", animateRotationDummyButton);
   }
 
+  obrowser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+    if (message.action === 'recomputeStatsDone') {
+      tab.stats = await getOrCreateStats();
+      await tab.update();
+    }
+  });
+
   obrowser.storage.onChanged.addListener(handleStorageChanged);
 }
 
