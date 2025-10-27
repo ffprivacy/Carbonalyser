@@ -357,6 +357,9 @@ const tab = {
                   },
                   tooltip: {
                     callbacks: {
+                      label: function(context) {
+                        return context.raw.y + ' bytes';
+                      },
                       afterBody: function(context) {
                         const point = context[0].raw;
                         let originsText = "";
@@ -594,6 +597,9 @@ const tab = {
                 plugins: {
                   tooltip: {
                     callbacks: {
+                      label: function(context) {
+                        return context.raw.y + ' mWh';
+                      },
                       afterBody: function(context) {
                         const point = context[0].raw;
                         let originsText = "";
