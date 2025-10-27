@@ -425,23 +425,11 @@ const tab = {
           },
           update: async function () {
             const newdata = await this.createData();
-            let clearDetected = false;
-            for(let idataset = 0; idataset < 2; idataset = idataset + 1) {
-              if ( newdata.datasets[idataset].data.length < this.data.myChart.data.datasets[idataset].data.length ) {
-                clearDetected = true;
-                break;
-              } else {
-                for(let i = this.data.myChart.data.datasets[idataset].data.length; i < newdata.datasets[idataset].data.length; i = i + 1) {
-                  this.data.myChart.data.datasets[idataset].data.push(newdata.datasets[idataset].data[i]);
-                }
-              }
+            for (let i = 0; i < this.data.myChart.data.datasets.length; i++) {
+              this.data.myChart.data.datasets[i].data = newdata.datasets[i].data.slice(); // replace all points
             }
-            if ( clearDetected ) {
-              this.data.myChart.destroy();
-              await this.init();
-            } else {
-              this.data.myChart.update();
-            }
+            this.data.myChart.data.labels = newdata.labels?.slice() || this.data.myChart.data.labels;
+            this.data.myChart.update();
           }
         }
       },
@@ -665,25 +653,13 @@ const tab = {
               this.data.config
             );
           },
-          update: async function () {
+          update: async function() {
             const newdata = await this.createData();
-            let deletionDetected = false;
-            for(let idataset = 0; idataset < 2; idataset = idataset + 1) {
-              if ( newdata.datasets[idataset].data.length < this.data.chart.data.datasets[idataset].data.length ) {
-                deletionDetected = true;
-                break;
-              } else {
-                for(let i = this.data.chart.data.datasets[idataset].data.length; i < newdata.datasets[idataset].data.length; i = i + 1) {
-                  this.data.chart.data.datasets[idataset].data.push(newdata.datasets[idataset].data[i]);
-                }
-              }
+            for (let i = 0; i < this.data.chart.data.datasets.length; i++) {
+              this.data.chart.data.datasets[i].data = newdata.datasets[i].data.slice(); // replace all points
             }
-            if ( deletionDetected ) {
-              this.data.chart.destroy();
-              await this.init();
-            } else {
-              this.data.chart.update();
-            }
+            this.data.chart.data.labels = newdata.labels?.slice() || this.data.chart.data.labels;
+            this.data.chart.update();
           }
         }
       },

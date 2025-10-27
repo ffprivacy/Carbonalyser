@@ -1,1 +1,2 @@
  * for sites not providing the content-length header, should use approach at https://chatgpt.com/c/68fc88d2-22d0-8326-ad58-89b7d453ba27
+ * tabs should keep track of which tab is currently selected
