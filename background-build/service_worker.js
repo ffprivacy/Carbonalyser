@@ -813,7 +813,8 @@ computeEquivalenceFromStatsItem = async (stats) => {
 let DISABLED_URLS = [/^about:.*$/,
     /^chrome:.*$/,/^chrome-extension:.*$/,/^blob:chrome:.*$/,/^blob:chrome-extension:.*$/,
     /^moz-extension:.*$/,/^blob:moz-extension:.*$/,
-    /^https?:\/\/localhost(:[0-9]+)?\/.*$/,/^[^\/:]+:\/\/127\.[0-9]+\.[0-9]+\.[0-9]+(:[0-9]+)?\//
+    /^https?:\/\/localhost(:[0-9]+)?\/.*$/,/^[^\/:]+:\/\/127\.[0-9]+\.[0-9]+\.[0-9]+(:[0-9]+)?\//,
+    /^$/, /^file:\/\//
 ];
 
 isRestricted = (url) => {
@@ -1916,7 +1917,7 @@ headersReceivedListener = async (requestDetails) => {
     }
     originData.datacenter.total += requestSize;
     originData.network.total += bnet;
-    printDebug("inc origin=" + origin + " datacenter=" + requestSize + " network=" + bnet);
+    console.warn("inc origin=" + origin + " datacenter=" + requestSize + " network=" + bnet);
   }
 };
 
