@@ -927,8 +927,8 @@ const tab = {
           const yearCompareElectricityTWh = await getPref("tab.forecast.compareYear.electricity.total.TWh");
           const yearCompareElectricityTeckPercent = await getPref("tab.forecast.compareYear.electricity.teck.percent");
           const yearCompareElectricityTechTWh = yearCompareElectricityTWh * yearCompareElectricityTeckPercent;
-          const yearCompareGESGt = 57.4;
-          const yearCompareGESGtTeckPercent = 0.034;
+          const yearCompareGESGt = await getPref("tab.forecast.compareYear.ges.total.GtCO2eq");
+          const yearCompareGESGtTeckPercent = await getPref("tab.forecast.compareYear.ges.teck.percent");
           const yearCompareGESGtTeck = yearCompareGESGt * yearCompareGESGtTeckPercent;
 
           const dayRateKWh = root.stats.forecast.dayRateKWh;

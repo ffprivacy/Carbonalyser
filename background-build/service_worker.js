@@ -403,6 +403,14 @@ getOrCreatePreferences = async () => {
                                 teck: {
                                     percent: {value: 0.1, description: "percent of new teck"},
                                 }
+                            },
+                            ges: {
+                                total: {
+                                    GtCO2eq: {value: 57.4, description: "compare year giga tons CO2 equivalent"},
+                                },
+                                teck: {
+                                    percent: {value: 0.034, description: "percent of new teck"},
+                                }
                             }
                         }
                     },
@@ -678,7 +686,7 @@ setSelectedRegion = async (r) => {
 injectEquivalentIntoHTML = async (stats, computedEquivalence) => {
     const megaByteTotal = toMegaByte(stats.totalBytes);
     const electricityUnitText = await getPref("general.electricityUnit");
-    const electricityConverted = (await electricityConvertFromUnitTo(computedEquivalence.kWhTotal, "kWh")).toFixed(3).toString().replace(/\.?0*$/,"");
+    const electricityConverted = (await electricityConvertFromUnitTo(computedEquivalence.kWhTotal, "kWh")).toFixed(0).toString().replace(/\.?0*$/,"");
     const cigarette = computedEquivalence.gCO2Total / (await getPref("general.equivalence.cigarette"));
     document.getElementById('duration').textContent = computedEquivalence.duration.toString();
     document.getElementById('mbTotalValue').textContent = megaByteTotal;    
@@ -887,8 +895,8 @@ getOrCreateStats = async () => {
 getEmptyStatsObject = () => {
     return {equivalence: getEmptyEquivalenceObject(), stats: 
         {
-            total: 0,
-            totaltotalBytesDataCenter: 0,
+            totalBytes: 0,
+            totalBytesDataCenter: 0,
             totalBytesNetwork: 0,
             highestBytesStats: []
         },

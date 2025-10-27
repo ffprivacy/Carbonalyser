@@ -412,6 +412,12 @@
       }
     }
   },
+  "tab_settings_preferencesScreen_prefs_tab_forecast_compareYear_ges_total_GtCO2eq": {
+      "message": "Globale Emissionen in GtCO2eq."
+  },
+  "tab_settings_preferencesScreen_prefs_tab_forecast_compareYear_ges_teck_percent": {
+      "message": "Prozentsatz der globalen Emissionen, der neuen Technologien zugeordnet ist."
+  },
   "tab_settings_preferencesScreen_prefs_tab_forecast_compareYear_electricity_teck_percent": {
     "message": "Prozentsatz des Weltverbrauchs, der neuen Technologien zugeteilt wird."
   },
