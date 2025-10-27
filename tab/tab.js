@@ -1467,6 +1467,21 @@ T_init = async () => {
   tab.stats = await getOrCreateStats();
   tab.init();
 
+  // Remember the selected tab
+  const bstabs = document.querySelectorAll('.nav-link');
+  let index = (await obrowser.storage.local.get("tabSelected")).tabSelected;
+  if ( index === undefined ) {
+    index = 0;
+  }
+  const bstab = new bootstrap.Tab(bstabs[index]);
+  bstab.show();
+
+  document.querySelectorAll('.nav-link').forEach((tab, index) => {
+    tab.addEventListener('shown.bs.tab', async () => {
+      await obrowser.storage.local.set({tabSelected: index});
+    });
+  });
+
   // Animation button of refresh
   if ( await getPref("tab.animate") ) {
     $("#refreshButton").on("click", animateRotationButton);
