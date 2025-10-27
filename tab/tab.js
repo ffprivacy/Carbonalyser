@@ -277,19 +277,19 @@ const tab = {
             });
             
             const root = this.parent.parent.parent;
-            for(let i = 0; i < root.stats.stats.highestStats.length; i ++) {
-              await this.createEntry(root.stats.stats.highestStats[i], true);
+            for(let i = 0; i < root.stats.stats.highestBytesStats.length; i ++) {
+              await this.createEntry(root.stats.stats.highestBytesStats[i], true);
             }
           });
         },
         update: async function () {
           await this.injectUnitUpdatedTranslation();
           const root = this.parent.parent.parent;
-          if ( root.stats.stats.highestStats.length == 0 ) {
+          if ( root.stats.stats.highestBytesStats.length == 0 ) {
             this.data.dtt.clear().draw();
           } else {
-            for(let i = 0; i < root.stats.stats.highestStats.length; i ++) {
-              await this.createEntry(root.stats.stats.highestStats[i], false);
+            for(let i = 0; i < root.stats.stats.highestBytesStats.length; i ++) {
+              await this.createEntry(root.stats.stats.highestBytesStats[i], false);
             }
           }
         }
@@ -463,7 +463,7 @@ const tab = {
             series: null,
           },
           init: async function () {
-            const topStats = (await getHeadingStats()).highestStats.slice(0, 100);
+            const topStats = (await getHeadingStats()).highestBytesStats.slice(0, 100);
             this.data.labels = [];
             this.data.series = [];
             for (const stat of topStats) {

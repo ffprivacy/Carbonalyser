@@ -150,7 +150,7 @@ const popup = {
       },
       update: async function () {
         const root = this.parent.parent;
-        if (root.stats.stats.highestStats.total === 0) {
+        if (root.stats.stats.highestBytesStats.total === 0) {
           return;
         }
       
@@ -163,7 +163,7 @@ const popup = {
           statsListItemsElement.removeChild(statsListItemsElement.firstChild);
         }
       
-        const top5 = root.stats.stats.highestStats.slice(0, 5);
+        const top5 = root.stats.stats.highestBytesStats.slice(0, 5);
         for (let index in top5) {
           if (top5[index].percent < 1) {
             continue;

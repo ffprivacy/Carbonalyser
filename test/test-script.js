@@ -231,10 +231,10 @@ describe('getHeadingStats', function() {
         await incBytesDataCenter(d1, 2);
         await incBytesDataCenter(d2, 3);
         const storage = await getOrCreateRawData();
-        const stats = (await getHeadingStats()).highestStats.slice(0, 1);
-        stats.totalDataCenter.should.equals(6);
-        stats.total.should.equals(stats.totalDataCenter);
-        stats.highestStats.length.should.equals(2);
+        const stats = (await getHeadingStats()).highestBytesStats.slice(0, 1);
+        stats.totalBytesDataCenter.should.equals(6);
+        stats.total.should.equals(stats.totalBytesDataCenter);
+        stats.highestBytesStats.length.should.equals(2);
         done();
     });
 });

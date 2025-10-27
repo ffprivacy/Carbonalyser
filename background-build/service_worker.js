@@ -677,9 +677,8 @@ setSelectedRegion = async (r) => {
  */
 injectEquivalentIntoHTML = async (stats, computedEquivalence) => {
     const megaByteTotal = toMegaByte(stats.total);
-    const electricity = await electricityConvertFromUnitTo();
     const electricityUnitText = await getPref("general.electricityUnit");
-    const electricityConverted = (computedEquivalence.kWhTotal * (electricity*1000000)).toFixed(3).toString().replace(/\.?0*$/,"");
+    const electricityConverted = (await electricityConvertFromUnitTo(computedEquivalence.kWhTotal, "kWh")).toFixed(3).toString().replace(/\.?0*$/,"");
     const cigarette = computedEquivalence.gCO2Total / (await getPref("general.equivalence.cigarette"));
     document.getElementById('duration').textContent = computedEquivalence.duration.toString();
     document.getElementById('mbTotalValue').textContent = megaByteTotal;    
@@ -795,14 +794,10 @@ computeEquivalenceFromStatsItem = async (stats) => {
     const selectedRegion = await getSelectedRegion();
     let duration = (await obrowser.storage.local.get('duration')).duration;
     res.duration = duration === undefined ? 0 : JSON.parse(duration).total;
-    res.kWhDeviceTotal = res.duration * (await getKWhMinute());
-    res.kWhDataCenterTotal = stats.totalDataCenter * (await getPref("general.kWhPerByteDataCenter"));
-    res.GESDataCenterTotal = res.kWhDataCenterTotal * regions[DEFAULT_REGION].carbonIntensity;
-    res.kWhNetworkTotal = stats.total * (await getPref("general.kWhPerByteNetwork"));
-    res.GESNetworkTotal = res.kWhNetworkTotal * regions[DEFAULT_REGION].carbonIntensity;
-    res.GESDeviceTotal = res.kWhDeviceTotal * regions[selectedRegion].carbonIntensity;
-    res.kWhTotal = Math.round(1000 * (res.kWhDataCenterTotal + res.kWhNetworkTotal + res.kWhDeviceTotal)) / 1000;
-    res.gCO2Total = Math.round(res.GESDataCenterTotal + res.GESNetworkTotal + res.GESDeviceTotal);
+    const kWhDeviceTotal = res.duration * (await getKWhMinute());
+    const cloudKWh = stats.totalmWh / 1000000.0;
+    res.kWhTotal = kWhDeviceTotal + cloudKWh;
+    res.gCO2Total = Math.round(regions[DEFAULT_REGION].carbonIntensity * cloudKWh + regions[selectedRegion].carbonIntensity * kWhDeviceTotal);
     res.kmByCar = Math.round(1000 * res.gCO2Total / (await getPref("general.GESgCO2ForOneKmByCar"))) / 1000;
     res.chargedSmartphones = Math.round(res.kWhTotal / (await getPref("general.equivalence.smartphone.capacityWh") / 1000));
     res.OneHourBulbNumber = res.kWhTotal / (await getPref("general.BulbConsumptionW") * 0.001);
@@ -893,9 +888,9 @@ getEmptyStatsObject = () => {
     return {equivalence: getEmptyEquivalenceObject(), stats: 
         {
             total: 0,
-            totaltotalDataCenter: 0,
-            totalNetwork: 0,
-            highestStats: []
+            totaltotalBytesDataCenter: 0,
+            totalBytesNetwork: 0,
+            highestBytesStats: []
         },
         bytesDataCenterObjectForm: [],
         bytesNetworkObjectForm: [],
@@ -1027,48 +1022,63 @@ setParameters = async (parameters) => {
 /**
  * Create stats from the raw data.
  */
-getHeadingStats = async (rawdata) => {
-    if ( rawdata === undefined ) {
-        rawdata = await getOrCreateRawData();
-    }
+getHeadingStats = async (rawdata, stats) => {
+
     let total = 0;
-    let totalDataCenter = 0, totalNetwork = 0;
-    const highestStats = [];
+    let totalBytesDataCenter = 0, totalBytesNetwork = 0;
+    const highestBytesStats = [];
 
-    for (let origin in rawdata) {
-        const rdo = getOrCreateOriginFromRawData(rawdata, origin);
-        totalDataCenter += rdo.datacenter.total;
-        totalNetwork    += rdo.network.total;
-        highestStats.push({ 'origin': origin, 'byte': (rdo.datacenter.total + rdo.network.total) });
+    if ( rawdata !== undefined ) {
+        for (let origin in rawdata) {
+            const rdo = getOrCreateOriginFromRawData(rawdata, origin);
+            totalBytesDataCenter += rdo.datacenter.total;
+            totalBytesNetwork    += rdo.network.total;
+            highestBytesStats.push({ 'origin': origin, 'byte': (rdo.datacenter.total + rdo.network.total) });
+        }
     }
 
-    total = totalDataCenter + totalNetwork;
+    total = totalBytesDataCenter + totalBytesNetwork;
 
-    highestStats.sort(function(a, b) {
+    highestBytesStats.sort(function(a, b) {
         return a.byte < b.byte ? 1 : a.byte > b.byte ? -1 : 0
     });
 
     let subtotal = 0;
-    for (let index in highestStats) {
-        subtotal += highestStats[index].byte;
+    for (let index in highestBytesStats) {
+        subtotal += highestBytesStats[index].byte;
     }
 
     if (total > 0) {
         const remaining = total - subtotal;
         if (remaining > 0) {
-            highestStats.push({'origin': translate('statsOthers'), 'byte': remaining});
+            highestBytesStats.push({'origin': translate('statsOthers'), 'byte': remaining});
         }
 
-        highestStats.forEach(function (item) {
+        highestBytesStats.forEach(function (item) {
             item.percent = Math.round(100 * item.byte / total)
         });
     }
 
+    let totalElectricitymWh = 0;
+    if ( stats === undefined ) {
+        totalElectricitymWh = -1;
+    } else {
+        for(let object of [
+            stats.electricityDataCenterObjectForm,
+            stats.electricityNetworkObjectForm
+        ]) {
+            for(let dot of object) {
+                totalElectricitymWh += dot.y;
+            }
+        }
+    }
+
     return {
-        'total': total,
-        'totalDataCenter': totalDataCenter,
-        'totalNetwork': totalNetwork,
-        'highestStats': highestStats
+        'totalBytes': total,
+        'totalmWh': totalElectricitymWh,
+        'totalBytesDataCenter': totalBytesDataCenter,
+        'totalBytesNetwork': totalBytesNetwork,
+        'highestBytesStats': highestBytesStats
     }
 }
 
@@ -1824,8 +1834,6 @@ writeStats = async (rawdata) => {
     rawdata = await getOrCreateRawData();
   }
   stats = getEmptyStatsObject();
-  stats.stats = await getHeadingStats(rawdata);
-  stats.equivalence = await computeEquivalenceFromStatsItem(stats.stats);
   const duration = await getDuration();
 
   // data
@@ -1836,6 +1844,10 @@ writeStats = async (rawdata) => {
 
   // update electricity of duration parts
   await updateDurationElectricity(duration);
+
+  // compute heading stats on the processed data
+  stats.stats = await getHeadingStats(rawdata, stats);
+  stats.equivalence = await computeEquivalenceFromStatsItem(stats.stats);
 
   // attention time
   stats.attention.time = {labels: [], data: []};

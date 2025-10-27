@@ -144,8 +144,6 @@ writeStats = async (rawdata) => {
     rawdata = await getOrCreateRawData();
   }
   stats = getEmptyStatsObject();
-  stats.stats = await getHeadingStats(rawdata);
-  stats.equivalence = await computeEquivalenceFromStatsItem(stats.stats);
   const duration = await getDuration();
 
   // data
@@ -156,6 +154,10 @@ writeStats = async (rawdata) => {
 
   // update electricity of duration parts
   await updateDurationElectricity(duration);
+
+  // compute heading stats on the processed data
+  stats.stats = await getHeadingStats(rawdata, stats);
+  stats.equivalence = await computeEquivalenceFromStatsItem(stats.stats);
 
   // attention time
   stats.attention.time = {labels: [], data: []};
