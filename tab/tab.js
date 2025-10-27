@@ -1173,39 +1173,6 @@ const tab = {
         }
       }
     },
-    sitesModifier: {
-      view: {
-        data: {
-        },
-        injectIntoHTML: async function() {
-          const sm = await getOrCreateSitesModifier();
-          document.getElementById('jsonDisplay').value = JSON.stringify(sm, null, 4);
-        },
-        init: async function() {
-          $(document).ready(async () => {
-            document.getElementById('validateJson').onclick = async () => {
-              const jsonText = document.getElementById('jsonDisplay').value;
-              const errorMsg = document.getElementById('jsonError');
-              const successMsg = document.getElementById('jsonSuccess');
-              errorMsg.style.display = 'none';
-              successMsg.style.display = 'none';
-              try {
-                const parsed = JSON.parse(jsonText);
-                await SMSetSitesModifier(parsed);
-                successMsg.style.display = 'block';
-              } catch (e) {
-                errorMsg.textContent = 'Invalid JSON: ' + e.message;
-                errorMsg.style.display = 'block';
-              }
-            }
-            await this.injectIntoHTML();
-          }); 
-        },
-        update: async function() {
-          await this.injectIntoHTML();
-        }
-      }
-    },
     preferencesScreen: {
       view: {
         data: {
@@ -1406,6 +1373,39 @@ const tab = {
         update: async function() {
           await this.injectPreferencesIntoHTML(false);
             this.data.dtt.page(this.data.page).draw('page');
+        }
+      }
+    },
+    sitesModifier: {
+      view: {
+        data: {
+        },
+        injectIntoHTML: async function() {
+          const sm = await getOrCreateSitesModifier();
+          document.getElementById('jsonDisplay').value = JSON.stringify(sm, null, 4);
+        },
+        init: async function() {
+          $(document).ready(async () => {
+            document.getElementById('validateJson').onclick = async () => {
+              const jsonText = document.getElementById('jsonDisplay').value;
+              const errorMsg = document.getElementById('jsonError');
+              const successMsg = document.getElementById('jsonSuccess');
+              errorMsg.style.display = 'none';
+              successMsg.style.display = 'none';
+              try {
+                const parsed = JSON.parse(jsonText);
+                await SMSetSitesModifier(parsed);
+                successMsg.style.display = 'block';
+              } catch (e) {
+                errorMsg.textContent = 'Invalid JSON: ' + e.message;
+                errorMsg.style.display = 'block';
+              }
+            }
+            await this.injectIntoHTML();
+          }); 
+        },
+        update: async function() {
+          await this.injectIntoHTML();
         }
       }
     }
