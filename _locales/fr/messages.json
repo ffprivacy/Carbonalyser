@@ -350,8 +350,29 @@
   "tab_prediction_prediction_button": {
     "message": "Valider"
   },
+  "tab_prediction_prediction_global_pop2": {
+    "message": "Les émissions en $YEAR$ ont quand à elles été de $GESTOTAL$ GtCO2eq avec $GESPERCENTTECK$% pour le numérique soit $GESTECK$ GtCO2e.",
+    "placeholders": {
+      "year": {
+        "content": "$1",
+        "example": "2022"
+      },
+      "gestotal": {
+        "content": "$2",
+        "example": "57.4"
+      },
+      "gespercentteck": {
+        "content": "$3",
+        "example": "3.4"
+      },
+      "gesteck": {
+        "content": "$4",
+        "example": "57.4"
+      }
+    }
+  },
   "tab_prediction_prediction_global_pop": {
-    "message": "Si chaque internaute consommait comme vous, la consommation globale d'électricité (pour $PEOPLE$ personnes pendant $DAYS$ jours) serait d'au moins $POWER$ TWh et les émissions d'au moins $GESPEOPLE$ GtCO2e. Pour vous donner une idée de comparaison la vraie consommation mondiale d'électricité en $YEAR$ est d'environ $ELECTRICITYTWHYEAR$ TWh dont $ELECTRICITYPERCENTTECK$% alloués aux nouvelles technologies (donc $TERAWATTTECK$ TWh) et cela pour $NETPEOPLEPERCENT$% de la population mondiale. Si la mesure de carbonalyser est plus grande que $TERAWATTTECK$ TWh vous pouvez être sur que avec votre utilisation d'électricité est plus élevée que les autres internautes. Si elle est plus faible vous consommez au moins à ce niveau mais gardez à l'esprit que carbonalyser sous estime le segment datacenters + infrastructure de routage. Les émissions en $YEAR$ ont quand à elles été de $GESTOTAL$ GtCO2eq avec $GESPERCENTTECK$% pour le numérique soit $GESTECK$ GtCO2e.",
+    "message": "Si chaque internaute consommait comme vous, la consommation globale d'électricité (pour $PEOPLE$ personnes pendant $DAYS$ jours) serait d'au moins $POWER$ TWh et les émissions d'au moins $GESPEOPLE$ GtCO2e. Pour vous donner une idée de comparaison la vraie consommation mondiale d'électricité en $YEAR$ est d'environ $ELECTRICITYTWHYEAR$ TWh dont $ELECTRICITYPERCENTTECK$% alloués aux nouvelles technologies (donc $TERAWATTTECK$ TWh) et cela pour $NETPEOPLEPERCENT$% de la population mondiale. Si la mesure de carbonalyser est plus grande que $TERAWATTTECK$ TWh vous pouvez être sur que avec votre utilisation d'électricité est plus élevée que les autres internautes. Si elle est plus faible vous consommez au moins à ce niveau mais gardez à l'esprit que carbonalyser sous estime le segment datacenters + infrastructure de routage.",
     "placeholders": {
       "people": {
         "content": "$1",
@@ -388,18 +409,6 @@
       "gespeople": {
         "content": "$9",
         "example": "2.5"
-      },
-      "gestotal": {
-        "content": "$10",
-        "example": "57.4"
-      },
-      "gespercentteck": {
-        "content": "$11",
-        "example": "3.4"
-      },
-      "gesteck": {
-        "content": "$12",
-        "example": "57.4"
       }
     }
   },
