@@ -1143,12 +1143,11 @@ fillSODGaps = (sod, tsInterval=60*10) => {
 
 // used to merge two sod (respecting interval constraint)
 // ts in seconds
-// the first SOD should be the datacenter bytes (to keep all origins)
-mergeTwoSOD = (sod1,sod2, tsInterval=60*10) => {
+addDataCenterBytesToNetwork = (datacenter,network, tsInterval=60*10) => {
     tsInterval *= 1000;
-    const keys = Object.keys(sod1);
-    const result = Object.assign({}, sod1);
-    for(let ts in sod2) {
+    const keys = Object.keys(datacenter);
+    const result = JSON.parse(JSON.stringify(datacenter));
+    for(let ts in network) {
         const tsOrigin = ts;
         const newTs = keys.find((a) => (ts-tsInterval) <= a && a <= (ts+tsInterval));
         if ( newTs !== undefined ) {
@@ -1157,12 +1156,12 @@ mergeTwoSOD = (sod1,sod2, tsInterval=60*10) => {
         if ( result[ts] === undefined ) {
             result[ts] = {dot: 0, origins: {}};
         } 
-        result[ts].dot += sod2[tsOrigin].dot;
-        for(const origin in sod2[tsOrigin].origins) {
+        result[ts].dot += network[tsOrigin].dot;
+        for(const origin in network[tsOrigin].origins) {
             if ( result[ts].origins[origin] === undefined ) {
                 result[ts].origins[origin] = 0;
             }
-            result[ts].origins[origin] += sod2[tsOrigin].origins[origin];
+            result[ts].origins[origin] += network[tsOrigin].origins[origin];
         }
     }
     return result;
@@ -1361,7 +1360,7 @@ generateElectricityConsumptionFromBytes = async (originStats, duration) => {
 createDetailledStatsFromData = (rawdata, byOrigins=undefined) => {
     let bytesDataCenterUnordered = createSumOfData(rawdata, 'datacenter', 60, byOrigins);
     let bytesNetworkUnordered = createSumOfData(rawdata, 'network', 60, byOrigins);
-    bytesNetworkUnordered = mergeTwoSOD(bytesDataCenterUnordered, bytesNetworkUnordered);
+    bytesNetworkUnordered = addDataCenterBytesToNetwork(bytesDataCenterUnordered, bytesNetworkUnordered);
     fillSODGaps(bytesNetworkUnordered);
     fillSODGaps(bytesDataCenterUnordered);
     bytesDataCenterUnordered = createObjectFromSumOfData(bytesDataCenterUnordered);
