@@ -190,7 +190,7 @@ const tab = {
          * @param {*} topResults tbody to insert in.
          * @param {*} init force creation.
          */
-        createEntry: function (stat, init) {
+        createEntry: async function (stat, init) {
           const root = this.parent.parent.parent;
 
           let foundValue = false;
@@ -216,6 +216,8 @@ const tab = {
             const site = document.createElement("td");
             const bytesDataCenter = document.createElement("td");
             const bytesNetwork = document.createElement("td");
+            const electricityDataCenter = document.createElement("td");
+            const electricityNetwork = document.createElement("td");
             const ecoindex = document.createElement("td");
             const dataOrigin = root.rawdata[stat.origin];
             tr.className = "oneResult";
@@ -224,19 +226,23 @@ const tab = {
             site.textContent = stat.origin;
             bytesDataCenter.textContent = toMegaByteNoRound(dataOrigin.datacenter.total);
             bytesNetwork.textContent = toMegaByteNoRound(dataOrigin.network.total + dataOrigin.datacenter.total);
+            electricityDataCenter.textContent = (await electricityConvertFromUnitTo((await getPref("general.kWhPerByteDataCenter")) * dataOrigin.datacenter.total, "kWh")).toFixed(3).toString().replace(/\.?0*$/,"");
+            electricityNetwork.textContent = (await electricityConvertFromUnitTo((await getPref("general.kWhPerByteNetwork")) * (dataOrigin.network.total + dataOrigin.datacenter.total), "kWh")).toFixed(3).toString().replace(/\.?0*$/,"");
             ecoindex.textContent = this.getAverageEcoIndex(dataOrigin.ecoindex);
 
             tr.appendChild(percent);
             tr.appendChild(site);
             tr.appendChild(bytesDataCenter);
             tr.appendChild(bytesNetwork);
+            tr.appendChild(electricityDataCenter);
+            tr.appendChild(electricityNetwork);
             tr.appendChild(ecoindex);
             this.data.dtt.row.add(tr).draw();
           }
         },
         init: async function () {
           // Add some sorters
-          $(document).ready(() => {
+          $(document).ready(async () => {
             this.data.dtt = $('#topResultsTable').DataTable({
               language: {
                   url: getDatatableTranslation()
@@ -260,7 +266,7 @@ const tab = {
             
             const root = this.parent.parent.parent;
             for(let i = 0; i < root.stats.stats.highestStats.length; i ++) {
-              this.createEntry(root.stats.stats.highestStats[i], true);
+              await this.createEntry(root.stats.stats.highestStats[i], true);
             }
           });
         },
@@ -270,7 +276,7 @@ const tab = {
             this.data.dtt.clear().draw();
           } else {
             for(let i = 0; i < root.stats.stats.highestStats.length; i ++) {
-              this.createEntry(root.stats.stats.highestStats[i], false);
+              await this.createEntry(root.stats.stats.highestStats[i], false);
             }
           }
         }
@@ -572,7 +578,7 @@ const tab = {
           },
           init: async function () {
             this.data.data = await this.createData();
-            const electricityUnit = await getElectricityModifier();
+            const electricityUnit = await electricityConvertFromUnitTo(1, "mWh");
             const data = this.data.data;
             this.data.config = {
               type: 'line',

@@ -538,10 +538,10 @@ IPIPrecurse = (obj, name, value) => {
 /**
  * Based on mWh convert electricity.
  */
-getElectricityModifier = async () => {
-    const unitIndex = {mWh: 1, Wh: 0.001, kWh: 0.000001};
-    return unitIndex[await getPref("general.electricityUnit")];
-}
+electricityConvertFromUnitTo = async (value, unit = "mW") => {
+    const f = { mW: 1, mWh: 1, W: 1e3, Wh: 1e3, kW: 1e6, kWh: 1e6 };
+    return value * f[unit] * (1 / f[await getPref("general.electricityUnit")]);
+};
 
 listenerStorage = async (changes, areaName) => {
     if ( areaName == "local" ) {
@@ -677,7 +677,7 @@ setSelectedRegion = async (r) => {
  */
 injectEquivalentIntoHTML = async (stats, computedEquivalence) => {
     const megaByteTotal = toMegaByte(stats.total);
-    const electricity = await getElectricityModifier();
+    const electricity = await electricityConvertFromUnitTo();
     const electricityUnitText = await getPref("general.electricityUnit");
     const electricityConverted = (computedEquivalence.kWhTotal * (electricity*1000000)).toFixed(3).toString().replace(/\.?0*$/,"");
     const cigarette = computedEquivalence.gCO2Total / (await getPref("general.equivalence.cigarette"));
