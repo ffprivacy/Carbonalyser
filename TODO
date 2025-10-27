@@ -1,1 +1,8 @@
  * for sites not providing the content-length header, should use approach at https://chatgpt.com/c/68fc88d2-22d0-8326-ad58-89b7d453ba27
+ * in equivalence, energy, co2 equivalent, energy equivalent should have been computed with the site modifier
+  getHeadingStats from the tab.js
+  refactor the getHeadingStats to be fed by the generateElectricityConsumptionFromBytes:
+   create a total in electricity
+   create a total in GES (region)
+
+ * ajouter à la prévision les GES comparer au total comme pour l'elec
