@@ -214,22 +214,22 @@ const tab = {
             const tr = document.createElement("tr");
             const percent = document.createElement("td");
             const site = document.createElement("td");
-            const data = document.createElement("td");
-            const network = document.createElement("td");
+            const bytesDataCenter = document.createElement("td");
+            const bytesNetwork = document.createElement("td");
             const ecoindex = document.createElement("td");
             const dataOrigin = root.rawdata[stat.origin];
             tr.className = "oneResult";
 
             percent.textContent = stat.percent;
             site.textContent = stat.origin;
-            data.textContent = toMegaByteNoRound(dataOrigin.datacenter.total);
-            network.textContent = toMegaByteNoRound(dataOrigin.network.total + dataOrigin.datacenter.total);
+            bytesDataCenter.textContent = toMegaByteNoRound(dataOrigin.datacenter.total);
+            bytesNetwork.textContent = toMegaByteNoRound(dataOrigin.network.total + dataOrigin.datacenter.total);
             ecoindex.textContent = this.getAverageEcoIndex(dataOrigin.ecoindex);
 
             tr.appendChild(percent);
             tr.appendChild(site);
-            tr.appendChild(data);
-            tr.appendChild(network);
+            tr.appendChild(bytesDataCenter);
+            tr.appendChild(bytesNetwork);
             tr.appendChild(ecoindex);
             this.data.dtt.row.add(tr).draw();
           }
