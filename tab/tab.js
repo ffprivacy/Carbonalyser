@@ -1376,40 +1376,65 @@ const tab = {
         },
         update: async function() {
           await this.injectPreferencesIntoHTML(false);
-            this.data.dtt.page(this.data.page).draw('page');
+          this.data.dtt.page(this.data.page).draw('page');
         }
       }
     },
     sitesModifier: {
       view: {
         data: {
+          dtt: null
         },
-        injectIntoHTML: async function() {
-          const sm = await getOrCreateSitesModifier();
-          document.getElementById('tab_settings_sites_entry').value = JSON.stringify(sm, null, 4);
+        createEntries: async function(init) {
+          const siteModifiers = await getOrCreateSitesModifier();
+          for(const siteModifierOrigin in siteModifiers) {
+            this.createEntry(init, {host: siteModifierOrigin, electricityFactor: siteModifiers[siteModifierOrigin]});
+          }
+        },
+        createEntry: function (init, site_modifier_object) {
+          let foundValue = false;
+          if ( ! init ) {
+            foundValue = DTTsearchEntry(this.data.dtt, 
+              (rowData) => rowData[0] === site_modifier_object.host, 
+              (row,rowData) => {
+                rowData[1] = site_modifier_object.electricityFactor;
+                row.data(rowData).draw();
+                return rowData;
+              }
+            );
+          }
+
+          if ( init || ! foundValue) {
+            const row = document.createElement("tr");
+            const host = document.createElement("td");
+            host.textContent = site_modifier_object.host;
+            const eFact = document.createElement("td");
+            eFact.textContent = site_modifier_object.electricityFactor;
+            row.append(host);
+            row.append(eFact);
+            row.style.textAlign = "center";
+            row.style.verticalAlign = "middle";
+            this.data.dtt.row.add(row).draw();
+          }
         },
         init: async function() {
-          $(document).ready(async () => {
-            document.getElementById('tab_settings_sites_validate').onclick = async () => {
-              const jsonText = document.getElementById('tab_settings_sites_entry').value;
-              const errorMsg = document.getElementById('tab_settings_sites_error');
-              const successMsg = document.getElementById('tab_settings_sites_success');
-              errorMsg.style.display = 'none';
-              successMsg.style.display = 'none';
-              try {
-                const parsed = JSON.parse(jsonText);
-                await SMSetSitesModifier(parsed);
-                successMsg.style.display = 'block';
-              } catch (e) {
-                errorMsg.textContent = 'Invalid site settings: ' + e.message;
-                errorMsg.style.display = 'block';
+          const root = this.parent.parent.parent;
+          $(document).ready(() => {
+            const table = $('#settings_sites_settings_table');
+            const dtt = table.DataTable({
+              language: {
+                  url: getDatatableTranslation()
               }
-            }
-            await this.injectIntoHTML();
-          }); 
+            });
+            dtt.on("init", function() {
+              document.getElementById("settings_sites_settings_table_wrapper").style.width = "100%";
+            });
+            this.data.dtt = dtt;
+            this.createEntries(true);
+          });
         },
         update: async function() {
-          await this.injectIntoHTML();
+          this.createEntries(false);
         }
       }
     }
