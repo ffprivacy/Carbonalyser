@@ -3,6 +3,10 @@ printDebug = (msg) => {
   printDebugOrigin("tab: " + msg);
 }
 
+// colors for the design of the page (eg charts)
+const lightColor = '#cfe2ff';
+const darkColor = '#084298';
+
 /**
  * Guess the type of the data from string representation
  */
@@ -481,33 +485,46 @@ const tab = {
         },
         view: {
           data: {
-            CHART_COLORS: [
-              'rgb(255, 99, 132)', // red
-              'rgb(255, 159, 64)', // orange
-              'rgb(255, 205, 86)', // yellow
-              'rgb(75, 192, 192)', // green
-              'rgb(54, 162, 235)', // blue
-              'rgb(153, 102, 255)', // purple
-              'rgb(201, 203, 207)' // grey
-            ],
             parent: null,
             dataIndex: null, // origin/index pair match
             pieData: null,
             pieConfig: null,
             chart: null,
           },
+          interpolateColor: function (factor) {
+            const c1 = parseInt(darkColor.slice(1), 16);
+            const c2 = parseInt(lightColor.slice(1), 16);
+            const r1 = c1 >> 16, g1 = (c1 >> 8) & 0xff, b1 = c1 & 0xff;
+            const r2 = c2 >> 16, g2 = (c2 >> 8) & 0xff, b2 = c2 & 0xff;
+            const r = Math.round(r1 + (r2 - r1) * factor);
+            const g = Math.round(g1 + (g2 - g1) * factor);
+            const b = Math.round(b1 + (b2 - b1) * factor);
+            return `rgb(${r},${g},${b})`;
+          },
           createData: async function () {
             const parent = this.parent;
             this.data.dataIndex = {};
-            for(const i in parent.model.data.labels) {
+            for (const i in parent.model.data.labels) {
               this.data.dataIndex[parent.model.data.labels[i]] = i;
             }
+            const values = parent.model.data.series;
+            const sortedIndices = values
+              .map((v, i) => ({ value: v, originalIndex: i }))
+              .sort((a, b) => b.value - a.value)
+              .map((v, i) => ({ ...v, rank: i }));
+
+            const colors = new Array(values.length);
+            sortedIndices.forEach(item => {
+              const factor = item.rank / (values.length - 1);
+              colors[item.originalIndex] = this.interpolateColor(factor);
+            });
+
             return {
               labels: parent.model.data.labels,
               datasets: [{
                 label: translate("tab_history_data_consumptionShareAmongSites_sitesShareDatasetLabel"),
-                data: parent.model.data.series,
-                backgroundColor: this.data.CHART_COLORS
+                data: values,
+                backgroundColor: colors
               }]
             };
           },
