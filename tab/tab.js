@@ -491,9 +491,10 @@ const tab = {
             pieConfig: null,
             chart: null,
           },
+          // The more the factor is high, the darker the color is [0..1]
           interpolateColor: function (factor) {
-            const c1 = parseInt(darkColor.slice(1), 16);
-            const c2 = parseInt(lightColor.slice(1), 16);
+            const c1 = parseInt(lightColor.slice(1), 16);
+            const c2 = parseInt(darkColor.slice(1), 16);
             const r1 = c1 >> 16, g1 = (c1 >> 8) & 0xff, b1 = c1 & 0xff;
             const r2 = c2 >> 16, g2 = (c2 >> 8) & 0xff, b2 = c2 & 0xff;
             const r = Math.round(r1 + (r2 - r1) * factor);
@@ -516,7 +517,7 @@ const tab = {
             const colors = new Array(values.length);
             sortedIndices.forEach(item => {
               const factor = item.rank / (values.length - 1);
-              colors[item.originalIndex] = this.interpolateColor(factor);
+              colors[item.originalIndex] = this.interpolateColor(1-factor);
             });
 
             return {
