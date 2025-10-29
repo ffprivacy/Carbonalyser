@@ -1489,6 +1489,7 @@ const tab = {
                 });
               }
             });
+            const _this = this;
             dtt.on("init", function() {
               const wrapper = document.getElementById('prefsTable_wrapper');
               wrapper.style.width = "100%";
