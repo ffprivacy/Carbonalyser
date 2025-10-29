@@ -556,6 +556,18 @@
   "tab_settings_preferencesScreen_resetButton": {
     "message": "Par défaut"
   },
+  "tab_settings_sites_settings_title": {
+    "message": "Paramètres des sites"
+  },
+  "tab_settings_sites_settings_table_electricity": {
+    "message": "Facteur de pondération de l'electricité (datacenter)"
+  },
+  "tab_settings_sites_settings_validate": {
+    "message": "Valider"
+  },
+  "tab_settings_sites_settings_table_origin": {
+    "message": "Origine"
+  },
   "tab_custom_ci_factor_title": {
     "message": "Ajouter un facteur"
   },

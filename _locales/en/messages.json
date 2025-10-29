@@ -556,6 +556,18 @@
   "tab_settings_preferencesScreen_resetButton": {
     "message": "By default"
   },
+  "tab_settings_sites_settings_title": {
+    "message": "Site Settings"
+  },
+  "tab_settings_sites_settings_table_electricity": {
+    "message": "Electricity weighting factor (data center)"
+  },
+  "tab_settings_sites_settings_validate": {
+    "message": "Validate"
+  },
+  "tab_settings_sites_settings_table_origin": {
+    "message": "Origin"
+  },
   "tab_custom_ci_factor_title": {
     "message": "Add factor"
   },

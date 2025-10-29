@@ -556,6 +556,18 @@
     "tab_settings_preferencesScreen_importExport_modal_save": {
       "message": "Para salvaguardar"
     },
+    "tab_settings_sites_settings_title": {
+      "message": "Configuración de sitios"
+    },
+    "tab_settings_sites_settings_table_electricity": {
+      "message": "Factor de ponderación de la electricidad (centro de datos)"
+    },
+    "tab_settings_sites_settings_validate": {
+      "message": "Validar"
+    },
+    "tab_settings_sites_settings_table_origin": {
+      "message": "Origen"
+    },
     "tab_custom_ci_factor_title": {
       "message": "Añadir factor"
     },
