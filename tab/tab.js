@@ -4,8 +4,25 @@ printDebug = (msg) => {
 }
 
 // colors for the design of the page (eg charts)
-const lightColor = '#cfe2ff';
-const darkColor = '#084298';
+const TAB_COLOR_VERY_LIGHT = '#cfe2ff';
+const TAB_COLOR_LIGHT = '#9ec5fe';
+const TAB_COLOR_MEDIUM_LIGHT = '#6ea8fe';
+const TAB_COLOR_BASE = '#3d8bfd';
+const TAB_COLOR_MAIN = '#0d6efd';
+const TAB_COLOR_DARK = '#0a58ca';
+const TAB_COLOR_VERY_DARK = '#084298';
+
+// The more the factor is high, the darker the color is [0..1]
+interpolateColor = function (factor) {
+  const c1 = parseInt(TAB_COLOR_VERY_LIGHT.slice(1), 16);
+  const c2 = parseInt(TAB_COLOR_VERY_DARK.slice(1), 16);
+  const r1 = c1 >> 16, g1 = (c1 >> 8) & 0xff, b1 = c1 & 0xff;
+  const r2 = c2 >> 16, g2 = (c2 >> 8) & 0xff, b2 = c2 & 0xff;
+  const r = Math.round(r1 + (r2 - r1) * factor);
+  const g = Math.round(g1 + (g2 - g1) * factor);
+  const b = Math.round(b1 + (b2 - b1) * factor);
+  return `rgb(${r},${g},${b})`;
+}
 
 /**
  * Guess the type of the data from string representation
@@ -344,7 +361,7 @@ const tab = {
                 {
                   label: translate("tab_history_data_consumptionOverTime_datacenterLabel"),
                   data: createXYDataFromObjectSumOfData(root.stats.bytesDataCenterObjectForm),
-                  borderColor: 'rgb(255, 0, 0)',
+                  borderColor: TAB_COLOR_DARK,
                   showLine: true,
                   lineTension: 0,
                   tension: 0
@@ -352,7 +369,7 @@ const tab = {
                 {
                   label: translate("tab_history_data_consumptionOverTime_networkLabel"),
                   data: createXYDataFromObjectSumOfData(root.stats.bytesNetworkObjectForm),
-                  borderColor: 'rgb(0, 255, 0)',
+                  borderColor: TAB_COLOR_LIGHT,
                   showLine: true,
                   lineTension: 0,
                   tension: 0
@@ -491,17 +508,6 @@ const tab = {
             pieConfig: null,
             chart: null,
           },
-          // The more the factor is high, the darker the color is [0..1]
-          interpolateColor: function (factor) {
-            const c1 = parseInt(lightColor.slice(1), 16);
-            const c2 = parseInt(darkColor.slice(1), 16);
-            const r1 = c1 >> 16, g1 = (c1 >> 8) & 0xff, b1 = c1 & 0xff;
-            const r2 = c2 >> 16, g2 = (c2 >> 8) & 0xff, b2 = c2 & 0xff;
-            const r = Math.round(r1 + (r2 - r1) * factor);
-            const g = Math.round(g1 + (g2 - g1) * factor);
-            const b = Math.round(b1 + (b2 - b1) * factor);
-            return `rgb(${r},${g},${b})`;
-          },
           createData: async function () {
             const parent = this.parent;
             this.data.dataIndex = {};
@@ -517,7 +523,7 @@ const tab = {
             const colors = new Array(values.length);
             sortedIndices.forEach(item => {
               const factor = item.rank / (values.length - 1);
-              colors[item.originalIndex] = this.interpolateColor(1-factor);
+              colors[item.originalIndex] = interpolateColor(1-factor);
             });
 
             return {
@@ -591,7 +597,7 @@ const tab = {
                 {
                   label: translate("tab_history_electricity_overTime_datasetDataCenter"),
                   data: root.stats.electricityDataCenterObjectForm,
-                  borderColor: 'rgb(255, 0, 0)',
+                  borderColor: TAB_COLOR_DARK,
                   showLine: true,
                   lineTension: 0,
                   tension: 0
@@ -599,7 +605,7 @@ const tab = {
                 {
                   label: translate("tab_history_electricity_overTime_datasetNetwork"),
                   data: root.stats.electricityNetworkObjectForm,
-                  borderColor: 'rgb(0, 255, 0)',
+                  borderColor: TAB_COLOR_LIGHT,
                   showLine: true,
                   lineTension: 0,
                   tension: 0
@@ -709,25 +715,30 @@ const tab = {
             data: null,
             config: null,
             chart: null,
-            dataIndex: null, // origin/index
-            CHART_COLORS: [
-              'rgb(255, 99, 132)',  // red
-              'rgb(255, 159, 64)',  // orange
-              'rgb(255, 205, 86)',  // yellow
-              'rgb(75, 192, 192)',  // green
-              'rgb(54, 162, 235)',  // blue
-              'rgb(153, 102, 255)', // purple
-              'rgb(201, 203, 207)'  // grey
-            ],
+            dataIndex: null // origin/index
           },
           createData: async function () {
             const root = this.parent.parent.parent.parent;
+            const values = root.stats.attention.time.data;
+
+            // Sort descending to make higher values brighter
+            const sortedIndices = values
+              .map((v, i) => ({ value: v, originalIndex: i }))
+              .sort((a, b) => b.value - a.value) // descending
+              .map((v, i) => ({ ...v, rank: i }));
+
+            const colors = new Array(values.length);
+            sortedIndices.forEach(item => {
+              const factor = item.rank / (values.length - 1); // higher value → lower rank → higher factor
+              colors[item.originalIndex] = interpolateColor(1 - factor);
+            });
+
             return {
               labels: root.stats.attention.time.labels,
               datasets: [{
                 label: translate("tab_history_attention_time_canvas_x_axis"),
-                data: root.stats.attention.time.data,
-                backgroundColor: this.data.CHART_COLORS
+                data: values,
+                backgroundColor: colors
               }]
             };
           },
@@ -821,16 +832,7 @@ const tab = {
             dataIndex: null,
             data: null,
             config: null,
-            chart: null,
-            CHART_COLORS: [
-              'rgb(255, 99, 132)', // red
-              'rgb(255, 159, 64)', // orange
-              'rgb(255, 205, 86)', // yellow
-              'rgb(75, 192, 192)', // green
-              'rgb(54, 162, 235)', // blue
-              'rgb(153, 102, 255)', // purple
-              'rgb(201, 203, 207)' // grey
-            ],
+            chart: null
           },
           init: async function () {
             const root = this.parent.parent.parent.parent;
@@ -839,11 +841,25 @@ const tab = {
               const origin = root.stats.attention.efficiency.labels[i];
               this.data.dataIndex[origin] = parseInt(i);
             }
+            const values = root.stats.attention.efficiency.data;
+
+            // Sort descending to make higher values brighter
+            const sortedIndices = values
+              .map((v, i) => ({ value: v, originalIndex: i }))
+              .sort((a, b) => b.value - a.value) // descending
+              .map((v, i) => ({ ...v, rank: i }));
+
+            const colors = new Array(values.length);
+            sortedIndices.forEach(item => {
+              const factor = item.rank / (values.length - 1); // higher value → lower rank → higher factor
+              colors[item.originalIndex] = interpolateColor(1 - factor);
+            });
+
             const data = {
               labels: root.stats.attention.efficiency.labels,
               datasets: [{
                 data: root.stats.attention.efficiency.data,
-                backgroundColor: this.data.CHART_COLORS
+                backgroundColor: colors
               }]
             };
             this.data.data = data;
