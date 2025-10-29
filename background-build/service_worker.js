@@ -1937,6 +1937,7 @@ headersReceivedListener = async (requestDetails) => {
     }
     originData.datacenter.total += requestSize;
     originData.network.total += bnet;
+    console.warn(requestDetails.url, responseHeadersContentLength);
     printDebug("inc origin=" + origin + " datacenter=" + requestSize + " network=" + bnet);
   }
 };
