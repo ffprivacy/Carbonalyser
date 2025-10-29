@@ -1383,7 +1383,16 @@ const tab = {
     sitesModifier: {
       view: {
         data: {
-          dtt: null
+          dtt: null,
+          editing: false,
+          editingTMO: null,
+          page: 0
+        },
+        stopEditing: function() {
+          if ( this.data.editingTMO != null ) {
+            clearTimeout(this.data.editingTMO);
+          }
+          this.data.editing = false;
         },
         createEntries: async function(init) {
           const siteModifiers = await getOrCreateSitesModifier();
@@ -1424,17 +1433,92 @@ const tab = {
             const dtt = table.DataTable({
               language: {
                   url: getDatatableTranslation()
+              },
+              columns: [
+                { 
+                  data: 0
+                },
+                {   
+                  data: 1,
+                  render: function (data) {
+                    let type = preferencesGuessTypeFromStringValue(data);
+                    let input;
+                    if ( type == "string" ) {
+                      input = '<input class="form-control" type="text" value="' + data + '" />';
+                    } else if ( type == "number" ) {
+                      input = '<input class="form-control" type="number" value=' + data + ' />';
+                    } else if ( type == "boolean" ) {
+                      input = `
+                        <div class="form-check form-switch d-flex justify-content-center align-items-center" style="width: 100%; height: 100%;">
+                          <input class="form-check-input" type="checkbox" ${data == "true" ? "checked" : ""}>
+                        </div>
+                      `;
+                    } else {
+                      return '<div>' + "Unsupported type of setting: " + type + '</div>'
+                    }
+                    return '<div class="form-group">' + input + '</div>';
+                  }
+                }
+              ],
+              rowCallback: ( row, data ) => {
+                const electricityChanger = row.children[1].children[0];
+                electricityChanger.addEventListener('focusin', (event) => {
+                  this.data.editing = true;
+                }, true);
+                electricityChanger.addEventListener('focusout', async (event) => {
+                    if ( this.data.editingTMO != null ) {
+                        clearTimeout(this.data.editingTMO);
+                    }
+                    this.data.editingTMO = setTimeout(() => {
+                       this.stopEditing();
+                    }, await getPref("tab.settings.preferencesScreen.msBeforeStopEdit"));
+                }, true);
+                electricityChanger.setAttribute("type", "text");
+                electricityChanger.addEventListener('input', (event) => {
+                  DTTsearchEntry(dtt, 
+                    (rowData) => rowData[0] === data[0], 
+                    (row,rowData) => {
+                      if ( event.target.type == 'checkbox' ) {
+                        rowData[1] = event.target.checked;
+                      } else {
+                        rowData[1] = event.target.value;
+                      }
+                      return rowData;
+                    }
+                  );
+                });
               }
             });
             dtt.on("init", function() {
-              document.getElementById("settings_sites_settings_table_wrapper").style.width = "100%";
+              const wrapper = document.getElementById('prefsTable_wrapper');
+              wrapper.style.width = "100%";
+              wrapper.addEventListener('click', async (e) => {
+                if (e.target.classList.contains('paginate_button')) {
+                  _this.data.page = _this.data.dtt.page();
+                }
+              });
             });
             this.data.dtt = dtt;
             this.createEntries(true);
+            document.getElementById("tab_settings_sites_settings_validate").addEventListener("click", async () => {
+              this.stopEditing();
+              const childrens = dtt.rows()[0];
+              const sitesModifiers = {};
+              for(let j = 0; j < childrens.length; j = j + 1) {
+                const rowId = childrens[j];
+                const row = dtt.row(rowId);
+                const rowData = row.data();
+                const host = rowData[0];
+                const electricityFactor = rowData[1];
+                sitesModifiers[host] = parseFloat(electricityFactor);
+              }
+              await SMSetSitesModifier(sitesModifiers);
+            });
           });
         },
         update: async function() {
           this.createEntries(false);
+          this.data.dtt.page(this.data.page).draw('page');
         }
       }
     }
