@@ -942,7 +942,7 @@ const tab = {
           const extrapolateTWhPeopleInternet = (forecastedKWh * peopleInternet) / 1e9;
           const extrapolateGESGtPeopleInternet = (forecastedtCO2e * peopleInternet) / 1e9;
           this.div.textContent = obrowser.i18n.getMessage('tab_prediction_prediction_description', [forecastedKWh.toFixed(5), days, dayRateKWh.toFixed(5), dayRategCO2e.toFixed(2), forecastedtCO2e.toFixed(2)]);
-          this.divGlobalPop.textContent = obrowser.i18n.getMessage('tab_prediction_prediction_global_pop', [peopleInternet, days, extrapolateTWhPeopleInternet.toFixed(1), (percentInternet * 100).toFixed(1), yearCompare, yearCompareElectricityTWh, (yearCompareElectricityTeckPercent * 100).toFixed(1), yearCompareElectricityTechTWh, extrapolateGESGtPeopleInternet.toFixed(1)]);
+          this.divGlobalPop.textContent = obrowser.i18n.getMessage('tab_prediction_prediction_global_pop', [peopleInternet, days, extrapolateTWhPeopleInternet.toFixed(1), (percentInternet * 100).toFixed(1), yearCompare, yearCompareElectricityTWh, (yearCompareElectricityTeckPercent * 100).toFixed(1), yearCompareElectricityTechTWh, extrapolateGESGtPeopleInternet.toFixed(2)]);
           this.divGlobalPop.textContent += " " + obrowser.i18n.getMessage("tab_prediction_prediction_global_pop2", [yearCompare, yearCompareGESGt.toFixed(2), (yearCompareGESGtTeckPercent * 100).toFixed(2), yearCompareGESGtTeck.toFixed(2)]);
         }
       }
