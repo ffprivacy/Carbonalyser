@@ -1,11 +1,7 @@
 (async function() {
-  function estimateDOMSize() {
-    return new Blob([document.documentElement.outerHTML]).size;
-  }
 
   function estimateResourcesSize() {
     const entries = performance.getEntriesByType("resource");
-    console.warn(entries);
     return entries.reduce((sum, e) => sum + (e.transferSize || 0), 0);
   }
 
@@ -20,13 +16,9 @@
   }
 
   function logPageSize() {
-    const domSize = estimateDOMSize();
     const resourcesSize = estimateResourcesSize();
-    const totalSize = domSize + resourcesSize;
 
-    console.log("DOM size:", formatBytes(domSize));
-    console.log("Resources size:", formatBytes(resourcesSize));
-    console.log("Total estimated page size:", formatBytes(totalSize), " : ",  totalSize);
+    console.log("Estimated size:", formatBytes(resourcesSize));
   }
 
   // Log initially after page load
