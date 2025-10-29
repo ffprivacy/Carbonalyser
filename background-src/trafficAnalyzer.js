@@ -149,11 +149,11 @@ writeStats = async (rawdata) => {
   // data
   Object.assign(stats, createDetailledStatsFromData(rawdata));
 
-  // electricity & electricity in attention time
-  Object.assign(stats, await generateElectricityConsumptionFromBytes(stats, duration));
-
   // update electricity of duration parts
   await updateDurationElectricity(duration);
+  
+  // electricity & electricity in attention time
+  Object.assign(stats, await generateElectricityConsumptionFromBytes(stats, duration));
 
   // compute heading stats on the processed data
   stats.stats = await getHeadingStats(rawdata, stats);
