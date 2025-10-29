@@ -832,7 +832,7 @@ const tab = {
             dataIndex: null,
             data: null,
             config: null,
-            chart: null
+            chart: null,
           },
           init: async function () {
             const root = this.parent.parent.parent.parent;
