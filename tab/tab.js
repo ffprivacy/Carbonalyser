@@ -11,6 +11,7 @@ const TAB_COLOR_BASE = '#3d8bfd';
 const TAB_COLOR_MAIN = '#0d6efd';
 const TAB_COLOR_DARK = '#0a58ca';
 const TAB_COLOR_VERY_DARK = '#084298';
+const BAR_CHART_ZOOM_SPEED = 0.1 / 10; // ten times slower than the default
 
 // The more the factor is high, the darker the color is [0..1]
 interpolateColor = function (factor) {
@@ -744,6 +745,7 @@ const tab = {
           },
           init: async function () {
             const data = await this.createData();
+            let zoomingFromProg = false;
             this.data.data = data;
             this.data.dataIndex = {};
             for(let i = 0; i < data.labels.length; i = i + 1) {
@@ -766,6 +768,7 @@ const tab = {
                   zoom: {
                     zoom: {
                       wheel: {
+                        speed: BAR_CHART_ZOOM_SPEED,
                         enabled: true,
                       },
                       drag: {
@@ -881,6 +884,7 @@ const tab = {
                     zoom: {
                       wheel: {
                         enabled: true,
+                        speed: BAR_CHART_ZOOM_SPEED,
                       },
                       drag: {
                         enabled: false
