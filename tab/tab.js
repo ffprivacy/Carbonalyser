@@ -180,7 +180,8 @@ const tab = {
       },
       view: {
         data: {
-          dtt: null
+          dtt: null,
+          page: 0
         },
         /**
          * Compute average ecoindex from a given origin (site).<br />
@@ -294,8 +295,15 @@ const tab = {
                 { data: 6 }
               ]
             });
+            const _this = this;
             this.data.dtt.on("init", function() {
               document.getElementById("topResultsTable_wrapper").style.width = "100%";
+              const wrapper = document.getElementById('topResultsTable_wrapper');
+              wrapper.addEventListener('click', async (e) => {
+                if (e.target.classList.contains('paginate_button')) {
+                  _this.data.page = _this.data.dtt.page();
+                }
+              });
             });
             
             const root = this.parent.parent.parent;
@@ -314,6 +322,7 @@ const tab = {
               await this.createEntry(root.stats.stats.highestBytesStats[i], false);
             }
           }
+          this.data.dtt.page(this.data.page).draw('page');
         }
       }
     }
@@ -1127,7 +1136,8 @@ const tab = {
         data: {
           parent: null,
           settingsCICIS: null,
-          dtt: null
+          dtt: null,
+          page: 0
         },
         /**
          * Create a new entry in region table.
@@ -1178,8 +1188,15 @@ const tab = {
                   url: getDatatableTranslation()
               }
             });
+            const _this = this;
             dtt.on("init", function() {
               document.getElementById("settingsCItable_wrapper").style.width = "100%";
+              const wrapper = document.getElementById('settingsCItable_wrapper');
+              wrapper.addEventListener('click', async (e) => {
+                if (e.target.classList.contains('paginate_button')) {
+                  _this.data.page = _this.data.dtt.page();
+                }
+              });
             });
             this.data.dtt = dtt;
             for(const name in root.parameters.regions) {
@@ -1192,6 +1209,7 @@ const tab = {
           for(const name in root.parameters.regions) {
             this.createEntry(name, false, root.parameters.regions[name]);
           }
+          this.data.dtt.page(this.data.page).draw('page');
         }
       }
     },
