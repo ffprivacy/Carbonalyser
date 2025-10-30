@@ -230,6 +230,7 @@ headersReceivedListener = async (requestDetails) => {
     let originData = buffer.rawdata[origin];
     if ( originData === undefined ) {
       originData = createEmptyRawData();
+      buffer.rawdata[origin] = originData;
     }
     originData.datacenter.total += 0;
     originData.network.total += bnet;
@@ -454,7 +455,7 @@ handleMessage = async (request) => {
               buffer.rawdata[hostname] = originData;
           }
           originData.datacenter.total += request.delta_bytes;
-          originData.network.total += request.delta_bytes;
+          originData.network.total += 0;
       }
       return;
     default:
