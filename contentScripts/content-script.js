@@ -25,7 +25,6 @@ function sendPageSizeChange() {
     origin: location.origin,
     delta_bytes: delta
   });
-  console.warn(location.origin, newTotalSize, delta);
   currentTotalSize = newTotalSize;
 }
 
