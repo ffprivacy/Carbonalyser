@@ -680,16 +680,23 @@ setSelectedRegion = async (r) => {
     }
 }
 // lib/carbonalyser/libEquivalence.js
+prettierDisplayOfValue = (value, after_comma_numbers) => {
+    let valueTxt = value.toFixed(after_comma_numbers).toString();
+    let valueArray = valueTxt.split(".");
+    if ( valueArray.length == 1 ) {
+        return valueTxt;
+    } else {
+        const afterCommaPart = valueArray[1].replace(/\.?0*$/,"");
+        return valueArray[0] + (afterCommaPart.length > 0 ? "." : "") + afterCommaPart; 
+    }
+}
 /**
  * inject the computed equivalence into HTML.
  */
 injectEquivalentIntoHTML = async (stats, computedEquivalence) => {
     const megaByteTotal = toMegaByte(stats.totalBytes);
     const electricityUnitText = await getPref("general.electricityUnit");
-    let electricityConverted = (await electricityConvertFromUnitTo(computedEquivalence.kWhTotal, "kWh")).toFixed(0).toString().replace(/\.?0*$/,"");
-    if ( electricityConverted == "" ) {
-        electricityConverted = "0";
-    }
+    const electricityConverted = prettierDisplayOfValue(await electricityConvertFromUnitTo(computedEquivalence.kWhTotal, "kWh"), 0);
     const cigarette = computedEquivalence.gCO2Total / (await getPref("general.equivalence.cigarette"));
     document.getElementById('duration').textContent = computedEquivalence.duration.toString();
     document.getElementById('mbTotalValue').textContent = megaByteTotal;    

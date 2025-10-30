@@ -229,8 +229,8 @@ const tab = {
                 rowData[0] = stat.percent;
                 rowData[2] = toMegaByteNoRound(dataOrigin.datacenter.total);
                 rowData[3] = toMegaByteNoRound(dataOrigin.network.total + dataOrigin.datacenter.total);
-                rowData[4] = (dcconvertFactor * siteElectricityModifier * dataOrigin.datacenter.total).toFixed(3).toString().replace(/\.?0*$/,"");
-                rowData[5] = (ntconvertFactor * (dataOrigin.network.total + dataOrigin.datacenter.total)).toFixed(3).toString().replace(/\.?0*$/,"");
+                rowData[4] = prettierDisplayOfValue(dcconvertFactor * siteElectricityModifier * dataOrigin.datacenter.total, 3);
+                rowData[5] = prettierDisplayOfValue(ntconvertFactor * (dataOrigin.network.total + dataOrigin.datacenter.total), 3);
                 rowData[6] = this.getAverageEcoIndex(dataOrigin.ecoindex);
                 row.data(rowData).draw();
                 return rowData;
@@ -254,8 +254,8 @@ const tab = {
             site.textContent = stat.origin;
             bytesDataCenter.textContent = toMegaByteNoRound(dataOrigin.datacenter.total);
             bytesNetwork.textContent = toMegaByteNoRound(dataOrigin.network.total + dataOrigin.datacenter.total);
-            electricityDataCenter.textContent = (dcconvertFactor * siteElectricityModifier * dataOrigin.datacenter.total).toFixed(3).toString().replace(/\.?0*$/,"");
-            electricityNetwork.textContent = (ntconvertFactor * (dataOrigin.network.total + dataOrigin.datacenter.total)).toFixed(3).toString().replace(/\.?0*$/,"");
+            electricityDataCenter.textContent = prettierDisplayOfValue(dcconvertFactor * siteElectricityModifier * dataOrigin.datacenter.total, 3);
+            electricityNetwork.textContent = prettierDisplayOfValue(ntconvertFactor * (dataOrigin.network.total + dataOrigin.datacenter.total), 3);
             ecoindex.textContent = this.getAverageEcoIndex(dataOrigin.ecoindex);
 
             tr.appendChild(percent);
