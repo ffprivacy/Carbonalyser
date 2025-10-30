@@ -225,21 +225,15 @@ headersReceivedListener = async (requestDetails) => {
   if ( isRestricted(originUrl) ) {
     // nothing todo
   } else {
-    // Extract bytes from datacenters
-    const responseHeadersContentLength = requestDetails.responseHeaders.find(element => element.name.toLowerCase() === "content-length");
-    const contentLength = undefined === responseHeadersContentLength ? {value: 0}
-    : responseHeadersContentLength;
-    const requestSize = parseInt(contentLength.value, 10);
-
     // Extract bytes from the network
     const bnet = getBytesFromHeaders(requestDetails.responseHeaders);
     let originData = buffer.rawdata[origin];
     if ( originData === undefined ) {
       originData = createEmptyRawData();
     }
-    originData.datacenter.total += requestSize;
+    originData.datacenter.total += 0;
     originData.network.total += bnet;
-    printDebug("inc origin=" + origin + " datacenter=" + requestSize + " network=" + bnet);
+    printDebug("inc origin=" + origin + " datacenter=" + 0 + " network=" + bnet);
   }
 };
 
@@ -332,10 +326,8 @@ sendHeadersListener = async (requestDetails) => {
     const bnet = getBytesFromHeaders(requestDetails.requestHeaders);
     if ( buffer.rawdata[origin] === undefined ) {
       buffer.rawdata[origin] = createEmptyRawData();
-      buffer.rawdata[origin].network.total = bnet;
-    } else {
-      buffer.rawdata[origin].network.total += bnet;
     }
+    buffer.rawdata[origin].network.total += bnet;
 
     const INVALID = -1; // just to ensure that in case of error, no more requests are sendt
     const deltaMs = await getPref("daemon.ecoindex.intervalMs");
