@@ -16,7 +16,7 @@ function sendPageSizeChange() {
   const resourcesSize = estimateResourcesSize();
   const newTotalSize = domSize + resourcesSize;
 
-  const delta = newTotalSize - currentTotalSize;
+  let delta = newTotalSize - currentTotalSize;
   if ( delta < 0 ) {
     delta = newTotalSize;
   }
