@@ -870,8 +870,8 @@ getDuration = async () => {
     let duration = (await obrowser.storage.local.get('duration')).duration;
     if ( duration === undefined ) {
         duration = {
-        total: 0,
-        set: {}
+            total: 0,
+            set: {}
         }
         await obrowser.storage.local.set({duration: JSON.stringify(duration)});
     } else {
@@ -1031,18 +1031,18 @@ setParameters = async (parameters) => {
  * Create stats from the raw data.
  */
 getHeadingStats = async (rawdata, stats) => {
-
+    if ( rawdata === undefined ) {
+        rawdata = await getOrCreateRawData();
+    }
     let total = 0;
     let totalBytesDataCenter = 0, totalBytesNetwork = 0;
     const highestBytesStats = [];
 
-    if ( rawdata !== undefined ) {
-        for (let origin in rawdata) {
-            const rdo = getOrCreateOriginFromRawData(rawdata, origin);
-            totalBytesDataCenter += rdo.datacenter.total;
-            totalBytesNetwork    += rdo.network.total;
-            highestBytesStats.push({ 'origin': origin, 'byte': (rdo.datacenter.total + rdo.network.total) });
-        }
+    for (let origin in rawdata) {
+        const rdo = getOrCreateOriginFromRawData(rawdata, origin);
+        totalBytesDataCenter += rdo.datacenter.total;
+        totalBytesNetwork    += rdo.network.total;
+        highestBytesStats.push({ 'origin': origin, 'byte': (rdo.datacenter.total + rdo.network.total) });
     }
 
     total = totalBytesDataCenter + totalBytesNetwork;
@@ -1318,9 +1318,6 @@ generateElectricityConsumptionFromBytes = async (originStats, duration) => {
         electricityDataCenterObjectForm: [],
         electricityNetworkObjectForm: []
     };
-    for(const object of Object.values(duration.set)) {
-      object.kWh = 0;
-    }
     for(const object of [
       {
         bytes: originStats.bytesDataCenterObjectForm, 
@@ -1398,7 +1395,7 @@ createDetailledStatsFromData = (rawdata, byOrigins=undefined) => {
 updateDurationElectricity = async (duration) => {
     for(const object of Object.values(duration.set)) {
         const kWhDevice = object.duration * (await getKWhMinute());
-        object.kWh += kWhDevice;
+        object.kWh = kWhDevice;
     }
 }
 
@@ -1847,11 +1844,11 @@ writeStats = async (rawdata) => {
   // data
   Object.assign(stats, createDetailledStatsFromData(rawdata));
 
-  // electricity & electricity in attention time
-  Object.assign(stats, await generateElectricityConsumptionFromBytes(stats, duration));
-
   // update electricity of duration parts
   await updateDurationElectricity(duration);
+  
+  // electricity & electricity in attention time
+  Object.assign(stats, await generateElectricityConsumptionFromBytes(stats, duration));
 
   // compute heading stats on the processed data
   stats.stats = await getHeadingStats(rawdata, stats);
@@ -1937,7 +1934,6 @@ headersReceivedListener = async (requestDetails) => {
     }
     originData.datacenter.total += requestSize;
     originData.network.total += bnet;
-    console.warn(requestDetails.url, responseHeadersContentLength);
     printDebug("inc origin=" + origin + " datacenter=" + requestSize + " network=" + bnet);
   }
 };
