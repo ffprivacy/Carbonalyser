@@ -452,6 +452,19 @@ handleMessage = async (request) => {
     case 'forceCIUpdater':
       // orders coming or for other scripts.
       break;
+    // Update the content size with the page analyzer
+    case 'page-size-change':
+      if ( await storageGetAnalysisState() ) {
+          const hostname = extractHostname(request.origin);
+          let originData = buffer.rawdata[hostname];
+          if ( originData === undefined ) {
+              originData = createEmptyRawData();
+              buffer.rawdata[hostname] = originData;
+          }
+          originData.datacenter.total += request.delta_bytes;
+          originData.network.total += request.delta_bytes;
+      }
+      return;
     default:
       printDebug("Unknow order");
   }
