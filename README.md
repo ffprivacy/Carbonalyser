@@ -11,8 +11,6 @@ With that information we produce the following representations to user:<br />
 |     <img src="https://user-images.githubusercontent.com/97546053/176733414-6d79545c-f14e-4438-bfcd-d1d85fd298fc.png" width="500px" />         |        <img src="https://user-images.githubusercontent.com/97546053/176733126-b628e353-7f05-409f-a47f-1e8d322ed5d1.png" width="500px" />         |
 |--------------|-----------------|
 
-<!-- [<img alt="chrome via github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Google_Chrome_icon_%282011%29.svg/512px-Google_Chrome_icon_%282011%29.svg.png" width="40px" />](https://github.com/AAABBBCCCAAAA/Carbonalyser/wiki/Install-for-chrome---without-chrome-webstore)  -->
-
 ## Privacy
 
 None of your data are collected: all browsing data are analyzed directly on the user device and are not sent or processed anywhere else in any way.<br />
@@ -22,12 +20,12 @@ The source code of this program is available in open access, to ensure transpare
 
 ## Support
 
-Documentation is on the [wiki](https://github.com/AAABBBCCCAAAA/Carbonalyser/wiki).<br />
-To report a bug, request a feature, check [here](https://github.com/AAABBBCCCAAAA/Carbonalyser/issues).
+Documentation is on the [wiki](https://github.com/ffprivacy/Carbonalyser/wiki).<br />
+To report a bug, request a feature, check [here](https://github.com/ffprivacy/Carbonalyser/issues).
 #### Compatibility table
-| firefox  | firefox via github | chrome                | firefox for android |
-|:----------:|:------------------------:|:-------------------------:|:------------:|
-| [<img alt="firefox" width="40px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Firefox_logo.png/636px-Firefox_logo.png" />](https://addons.mozilla.org/fr/firefox/addon/carbonalyser-fork/)     | [<img alt="firefox via github" width="40px" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"/>](https://github.com/AAABBBCCCAAAA/Carbonalyser/releases) | only from source | https://addons.mozilla.org/fr/firefox/collections/17360161/carbonalyser/ |
+| firefox | chrome |
+|:----------:|:------------:|
+|  dropped  | [<img alt="github logo" width="40px" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"/>](https://github.com/ffprivacy/Carbonalyser/releases) [see](https://github.com/ffprivacy/Carbonalyser/wiki/Install-for-chrome---without-chrome-webstore) |
 #### Provided features
 - [x] browsing analysis history
 - [x] preference screen

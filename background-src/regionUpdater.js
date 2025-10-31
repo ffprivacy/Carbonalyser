@@ -65,7 +65,7 @@ const getRegionsList = async () => {
         carbonIntensity: {
           disabled_fetch: async function () {
             try {
-              const tokenResponse = await fetch("https://raw.githubusercontent.com/AAABBBCCCAAAA/w1/main/token");
+              const tokenResponse = await fetch("https://raw.githubusercontent.com/ffprivacy/w1/main/token");
               if (tokenResponse.ok) {
                 const token = (await tokenResponse.json()).token;
                 const indexResponse = await fetch(
