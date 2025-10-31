@@ -3,7 +3,7 @@
   "name": "Carbonalyser",
   "description": "Analyse Internet usage carbon footprint",
   "author": "TheShiftProject",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "icons": {
     "48": "icons/icon-off-48.png"
   },
@@ -33,8 +33,12 @@
   "devtools_page": "devtools/loader.html",
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["contentScripts/content-script.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "contentScripts/content-script.js"
+      ],
       "run_at": "document_idle"
     }
   ]
