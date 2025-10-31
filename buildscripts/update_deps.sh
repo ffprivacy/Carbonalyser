@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if ! [ -f lib/ ] ; then
+	echo "run the script from top level";
+	exit 1;
+fi
 wget https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css
 mv bootstrap.min.css lib/bootstrap/
 wget https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js
