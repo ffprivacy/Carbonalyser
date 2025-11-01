@@ -969,7 +969,6 @@ const tab = {
         },
         update: async function() {
           const root = this.parent.parent.parent;
-          const regions = await getRegions();
           const yearCompare = await getPref("tab.forecast.compareYear.value");
           const yearCompareElectricityTWh = await getPref("tab.forecast.compareYear.electricity.total.TWh");
           const yearCompareElectricityTeckPercent = await getPref("tab.forecast.compareYear.electricity.teck.percent");
@@ -978,9 +977,9 @@ const tab = {
           const yearCompareGESGtTeckPercent = await getPref("tab.forecast.compareYear.ges.teck.percent");
           const yearCompareGESGtTeck = yearCompareGESGt * yearCompareGESGtTeckPercent;
 
-          const dayRateKWh = root.stats.forecast.dayRateKWh;
           const days = this.data.days;
-          const dayRategCO2e = regions[DEFAULT_REGION].carbonIntensity * dayRateKWh;
+          const dayRateKWh = root.stats.forecast.dayRateKWh;
+          const dayRategCO2e = root.stats.forecast.dayRategCO2e;
           const forecastedKWh = dayRateKWh * days;
           const forecastedtCO2e = dayRategCO2e * days / 1e6;
           const people = (await getPref("general.population.number"));
@@ -988,6 +987,7 @@ const tab = {
           const peopleInternet = people * percentInternet;
           const extrapolateTWhPeopleInternet = (forecastedKWh * peopleInternet) / 1e9;
           const extrapolateGESGtPeopleInternet = (forecastedtCO2e * peopleInternet) / 1e9;
+
           this.div.textContent = obrowser.i18n.getMessage('tab_prediction_prediction_description', [forecastedKWh.toFixed(5), days, dayRateKWh.toFixed(5), dayRategCO2e.toFixed(2), forecastedtCO2e.toFixed(2)]);
           this.divGlobalPop.textContent = obrowser.i18n.getMessage('tab_prediction_prediction_global_pop', [peopleInternet, days, extrapolateTWhPeopleInternet.toFixed(1), (percentInternet * 100).toFixed(1), yearCompare, yearCompareElectricityTWh, (yearCompareElectricityTeckPercent * 100).toFixed(1), yearCompareElectricityTechTWh, extrapolateGESGtPeopleInternet.toFixed(2)]);
           this.divGlobalPop.textContent += " " + obrowser.i18n.getMessage("tab_prediction_prediction_global_pop2", [yearCompare, yearCompareGESGt.toFixed(2), (yearCompareGESGtTeckPercent * 100).toFixed(2), yearCompareGESGtTeck.toFixed(2)]);

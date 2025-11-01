@@ -172,11 +172,13 @@ writeStats = async (rawdata) => {
   const keys = Object.keys(duration.set).sort((a, b) => a - b);
   if ( 0 == keys.length) {
     stats.forecast.dayRateKWh = 0;
+    stats.forecast.dayRategCO2e = 0;
   } else {
     const first = parseInt(keys[0]);
     const last = parseInt(keys[keys.length - 1]);
     const totalDays = Math.ceil((last - first + 1) / (60 * 24)); // include gaps
     stats.forecast.dayRateKWh = stats.equivalence.kWhTotal / totalDays;
+    stats.forecast.dayRategCO2e = stats.equivalence.gCO2Total / totalDays;
   }
 
   // attention efficiency
