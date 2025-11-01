@@ -1875,30 +1875,27 @@ writeStats = async (rawdata) => {
 
   // forecast
   stats.forecast.dayRateKWh = 0;
-  let samples = 0;
+  let days = 0;
   const keys = (Object.keys(duration.set)).sort();
-  let stackedDay, dayFirstMin = null;
+  let dayFirstMin = null;
   const minInday = 60 * 24;
   for(let a = 0; a < keys.length; a = a + 1) {
     const minute = keys[a];
-    if ( minInday < (dayFirstMin - minute) ) {
-      stats.forecast.dayRateKWh += (stackedDay);
-      samples += 1;
+    if (dayFirstMin != null && minute - dayFirstMin >= minInday) {
+      days += 1;
       dayFirstMin = null;
     }
     if (dayFirstMin === null ) {
       dayFirstMin = minute;
-      stackedDay = 0;
     }
     const durationObj = duration.set[minute];
-    stackedDay += durationObj.kWh;
+    stats.forecast.dayRateKWh += durationObj.kWh;
   }
-  if ( 0 < stackedDay && samples < 5 ) {
-    stats.forecast.dayRateKWh += (stackedDay);
-    samples += 1;
+  if ( dayFirstMin != null ) {
+    days += 1;
   }
-  if (0 < samples) {
-    stats.forecast.dayRateKWh /= samples;
+  if (0 < days) {
+    stats.forecast.dayRateKWh /= days;
   }
 
   // attention efficiency
