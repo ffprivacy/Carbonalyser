@@ -485,7 +485,9 @@ obrowser.storage.onChanged.addListener(async (changes, areaName) => {
 TA_init = async () => {
 
   if ( await getPref("daemon.runAtStart") ) {
-    await handleMessage({action: 'start'});
+    if ( await storageGetAnalysisState() ) {
+      await handleMessage({action: 'start'});
+    }
   } else {
     await storageSetAnalysisState(0);
   }
