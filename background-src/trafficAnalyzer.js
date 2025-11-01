@@ -169,29 +169,18 @@ writeStats = async (rawdata) => {
   }
 
   // forecast
-  stats.forecast.dayRateKWh = 0;
-  let days = 0;
-  const keys = (Object.keys(duration.set)).sort();
-  let dayFirstMin = null;
-  const minInday = 60 * 24;
-  for(let a = 0; a < keys.length; a = a + 1) {
-    const minute = keys[a];
-    if (dayFirstMin != null && minute - dayFirstMin >= minInday) {
-      days += 1;
-      dayFirstMin = null;
-    }
-    if (dayFirstMin === null ) {
-      dayFirstMin = minute;
-    }
-    const durationObj = duration.set[minute];
-    stats.forecast.dayRateKWh += durationObj.kWh;
+  const keys = Object.keys(duration.set).sort((a, b) => a - b);
+  let totalKWh = 0;
+  for (const k of keys) totalKWh += duration.set[k].kWh;
+  if ( 0 == keys.length) {
+    stats.forecast.dayRateKWh = 0;
+  } else {
+    const first = parseInt(keys[0]);
+    const last = parseInt(keys[keys.length - 1]);
+    const totalDays = Math.ceil((last - first + 1) / (60 * 24)); // include gaps
+    stats.forecast.dayRateKWh = totalKWh / totalDays;
   }
-  if ( dayFirstMin != null ) {
-    days += 1;
-  }
-  if (0 < days) {
-    stats.forecast.dayRateKWh /= days;
-  }
+
 
   // attention efficiency
   stats.attention.efficiency = {labels: [], data: []};
