@@ -170,17 +170,14 @@ writeStats = async (rawdata) => {
 
   // forecast
   const keys = Object.keys(duration.set).sort((a, b) => a - b);
-  let totalKWh = 0;
-  for (const k of keys) totalKWh += duration.set[k].kWh;
   if ( 0 == keys.length) {
     stats.forecast.dayRateKWh = 0;
   } else {
     const first = parseInt(keys[0]);
     const last = parseInt(keys[keys.length - 1]);
     const totalDays = Math.ceil((last - first + 1) / (60 * 24)); // include gaps
-    stats.forecast.dayRateKWh = totalKWh / totalDays;
+    stats.forecast.dayRateKWh = stats.equivalence.kWhTotal / totalDays;
   }
-
 
   // attention efficiency
   stats.attention.efficiency = {labels: [], data: []};
