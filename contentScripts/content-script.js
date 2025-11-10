@@ -1,24 +1,38 @@
 (function() {
 
-let domSize = 0;
-
 function estimateDOMSize() {
-  domSize = new Blob([document.documentElement.outerHTML]).size;
+  let domSize = 0;
+  for(let nav of performance.getEntriesByType("navigation")) {
+    domSize += nav.transferSize;
+  }
+  return domSize;
 }
+
+const trackedResources = new Map();
 
 function estimateResourcesSize() {
   const entries = performance.getEntriesByType("resource");
-  return entries.reduce((sum, e) => sum + (e.transferSize || 0), 0);
+  for (const e of entries) {
+    if (!trackedResources.has(e.name)) {
+      trackedResources.set(e.name, e.transferSize || 0);
+    }
+  }
+  let total = 0;
+  for (const size of trackedResources.values()) {
+    total += size;
+  }
+  return total;
 }
 
 let currentTotalSize = 0;
 function sendPageSizeChange() {
+  const domSize = estimateDOMSize();
   const resourcesSize = estimateResourcesSize();
   const newTotalSize = domSize + resourcesSize;
 
   let delta = newTotalSize - currentTotalSize;
   if ( delta < 0 ) {
-    delta = newTotalSize;
+    console.warn("issue with the delta newTotalSize=" + newTotalSize + " currentTotalSize=" + currentTotalSize + " delta=" + delta + " domSize=" + domSize + " resourcesSize=" + resourcesSize);
   }
   chrome.runtime.sendMessage({
     action: "page-size-change",
@@ -28,29 +42,11 @@ function sendPageSizeChange() {
   currentTotalSize = newTotalSize;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  estimateDOMSize();
-  sendPageSizeChange();
-});
-
+// Estimate initial sizess
+sendPageSizeChange();
 
 // Observe DOM changes
 const observer = new MutationObserver(() => sendPageSizeChange());
 observer.observe(document, { childList: true, subtree: true, attributes: true });
 
-// Hook into fetch
-const originalFetch = window.fetch;
-window.fetch = async (...args) => {
-  const response = await originalFetch.apply(this, args);
-  response.clone().blob().finally(sendPageSizeChange);
-  return response;
-};
-
-// Hook into XMLHttpRequest
-const originalXHR = window.XMLHttpRequest;
-window.XMLHttpRequest = function() {
-  const xhr = new originalXHR();
-  xhr.addEventListener("loadend", sendPageSizeChange);
-  return xhr;
-};
 })();
