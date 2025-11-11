@@ -1576,9 +1576,6 @@ const tab = {
             const element = document.getElementById("tab_settings_sites_settings_importExport_modal_input");
             element.value = JSON.stringify(await getOrCreateSitesModifier(), null, 2);
           });
-          document.getElementById("tab_settings_sites_settings_sync").addEventListener("click", async () => {
-            console.warn("Sync sites modifier from remote");
-          });
           document.getElementById("tab_settings_sites_settings_importExport_modal_save").addEventListener("click", async () => {
             const element = document.getElementById("tab_settings_sites_settings_importExport_modal_input");
             try {
@@ -1606,16 +1603,19 @@ const tab = {
           // part of the refresh system
           const div = $("#tab_settings_sites_settings_sync_container");
           div.click(async function() {
+            console.warn("this");
             const dateNow = Date.now();
             obrowser.runtime.sendMessage({action: "forceSiteModifierUpdater"});
             if ( await getPref("tab.animate") ) {
               img.hidden = false;
               imgAnimation.start();
               const interval = setInterval(async function() {
+                console.warn("2");
                 const sitesModifierLastRefresh = await obrowser.storage.local.get("sitesModifierLastRefresh").sitesModifierLastRefresh;
                 if ( sitesModifierLastRefresh !== undefined ) {
                   const sitesModifierLastResfreshObject = JSON.parse(sitesModifierLastRefresh);
                   if ( sitesModifierLastResfreshObject !== undefined ) {
+                    console.warn(sitesModifierLastResfreshObject);
                     if ( dateNow < sitesModifierLastResfreshObject ) {
                       imgAnimation.loop = false;
                       clearInterval(interval);

@@ -6,7 +6,6 @@ insertUpdatedSitesModifier = async () => {
     const newSM = await response.json();
     await SMSetSitesModifier(newSM);
     await obrowser.storage.local.set({ sitesModifierLastRefresh: JSON.stringify(Date.now()) });
-    console.log("Sites modifier updated from remote.");
   } catch (err) {
     console.error("Error fetching or parsing sites modifier from remote:", err);
   }
