@@ -1416,7 +1416,7 @@ const tab = {
             });
             document.getElementById("tab_settings_preferencesScreen_importExportButton").addEventListener("click", async () => {
               const element = document.getElementById("tab_settings_preferencesScreen_importExport_modal_input");
-              element.value = JSON.stringify(await getOrCreatePreferences());
+              element.value = JSON.stringify(await getOrCreatePreferences(), null, 2);
             });
             document.getElementById("tab_settings_preferencesScreen_importExport_modal_save").addEventListener("click", async () => {
               const element = document.getElementById("tab_settings_preferencesScreen_importExport_modal_input");
