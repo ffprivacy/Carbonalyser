@@ -392,7 +392,7 @@ getOrCreatePreferences = async () => {
                         refreshMs: {value: 3600 * 1000, description: "refresh carbon interval"},
                     },
                     sites: {
-                        refreshMs: {value: 3600 * 1000, description: "refresh site settings interval"},
+                        refreshMs: {value: 1000, description: "refresh site settings interval"},
                     }
                 },
                 tab: {
@@ -2341,7 +2341,6 @@ insertUpdatedSitesModifier = async () => {
     const newSM = await response.json();
     await SMSetSitesModifier(newSM);
     await obrowser.storage.local.set({ sitesModifierLastRefresh: JSON.stringify(Date.now()) });
-    console.log("Sites modifier updated from remote.");
   } catch (err) {
     console.error("Error fetching or parsing sites modifier from remote:", err);
   }

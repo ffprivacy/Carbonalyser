@@ -1603,19 +1603,16 @@ const tab = {
           // part of the refresh system
           const div = $("#tab_settings_sites_settings_sync_container");
           div.click(async function() {
-            console.warn("this");
             const dateNow = Date.now();
             obrowser.runtime.sendMessage({action: "forceSiteModifierUpdater"});
             if ( await getPref("tab.animate") ) {
               img.hidden = false;
               imgAnimation.start();
               const interval = setInterval(async function() {
-                console.warn("2");
-                const sitesModifierLastRefresh = await obrowser.storage.local.get("sitesModifierLastRefresh").sitesModifierLastRefresh;
+                const sitesModifierLastRefresh = (await obrowser.storage.local.get("sitesModifierLastRefresh")).sitesModifierLastRefresh;
                 if ( sitesModifierLastRefresh !== undefined ) {
                   const sitesModifierLastResfreshObject = JSON.parse(sitesModifierLastRefresh);
                   if ( sitesModifierLastResfreshObject !== undefined ) {
-                    console.warn(sitesModifierLastResfreshObject);
                     if ( dateNow < sitesModifierLastResfreshObject ) {
                       imgAnimation.loop = false;
                       clearInterval(interval);
