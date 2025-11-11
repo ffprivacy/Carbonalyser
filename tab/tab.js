@@ -1612,11 +1612,11 @@ const tab = {
               img.hidden = false;
               imgAnimation.start();
               const interval = setInterval(async function() {
-                const sitesModifier = await obrowser.storage.local.get("sitesModifier").sitesModifier;
-                if ( sitesModifier !== undefined ) {
-                  const sitesModifierObject = JSON.parse(sitesModifier);
-                  if ( sitesModifierObject.lastRefresh !== undefined ) {
-                    if ( dateNow < sitesModifierObject.lastRefresh ) {
+                const sitesModifierLastRefresh = await obrowser.storage.local.get("sitesModifierLastRefresh").sitesModifierLastRefresh;
+                if ( sitesModifierLastRefresh !== undefined ) {
+                  const sitesModifierLastResfreshObject = JSON.parse(sitesModifierLastRefresh);
+                  if ( sitesModifierLastResfreshObject !== undefined ) {
+                    if ( dateNow < sitesModifierLastResfreshObject ) {
                       imgAnimation.loop = false;
                       clearInterval(interval);
                     } else {

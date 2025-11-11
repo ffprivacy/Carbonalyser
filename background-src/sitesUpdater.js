@@ -1,24 +1,17 @@
 let SU_intervalID = null;
 insertUpdatedSitesModifier = async () => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "https://raw.githubusercontent.com/carbonalyser/CarbonalyzerData/main/sitesModifier.json", true);
-    xhr.onreadystatechange = async function() {
-        if ( xhr.readyState === 4 ) {
-            if ( xhr.status === 200 ) {
-                try {
-                    const newSM = JSON.parse(xhr.responseText);
-                    await SMSetSitesModifier(newSM);
-                    console.log("Sites modifier updated from remote.");
-                } catch (err) {
-                    console.error("Error parsing sites modifier from remote:", err);
-                }
-            } else {
-                console.warn("Could not fetch updated sites modifier, status:", xhr.status);
-            }
-        }
-    };
-    xhr.send();
+  try {
+    const response = await fetch("https://raw.githubusercontent.com/ffprivacy/CarbonalyzerData/refs/heads/main/sitesModifier.json");
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const newSM = await response.json();
+    await SMSetSitesModifier(newSM);
+    await obrowser.storage.local.set({ sitesModifierLastRefresh: JSON.stringify(Date.now()) });
+    console.log("Sites modifier updated from remote.");
+  } catch (err) {
+    console.error("Error fetching or parsing sites modifier from remote:", err);
+  }
 }
+
 /**
  * Init the script.
  */
