@@ -2137,6 +2137,7 @@ handleMessage = async (request) => {
     case 'recomputeStatsDone':
     case 'reinitCIUpdater':
     case 'forceCIUpdater':
+    case 'forceSiteModifierUpdater':
       // orders coming or for other scripts.
       break;
     // Update the content size with the page analyzer
@@ -2363,5 +2364,13 @@ SU_stop = () => {
     clearInterval(SU_intervalID);
     SU_intervalID = null;
 }
+
+obrowser.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+
+    if ( request.action == "forceSiteModifierUpdater" ) {
+        await insertUpdatedSitesModifier();
+    }
+
+});
 
 SU_init();

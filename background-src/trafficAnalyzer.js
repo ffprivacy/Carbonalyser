@@ -428,6 +428,7 @@ handleMessage = async (request) => {
     case 'recomputeStatsDone':
     case 'reinitCIUpdater':
     case 'forceCIUpdater':
+    case 'forceSiteModifierUpdater':
       // orders coming or for other scripts.
       break;
     // Update the content size with the page analyzer
