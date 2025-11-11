@@ -392,7 +392,7 @@ getOrCreatePreferences = async () => {
                         refreshMs: {value: 3600 * 1000, description: "refresh carbon interval"},
                     },
                     sites: {
-                        refreshMs: {value: 1000, description: "refresh site settings interval"},
+                        refreshMs: {value: 3600 * 1000, description: "refresh site settings interval"},
                     }
                 },
                 tab: {
