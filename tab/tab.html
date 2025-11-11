@@ -373,6 +373,37 @@
                             <div class="col text-center">
                                 <button id="tab_settings_sites_settings_validate" class="button" translate="tab_settings_sites_settings_validate"></button>
                             </div>
+                            <div class="col text-center" id="tab_settings_sites_settings_sync_container">
+                                <button id="tab_settings_sites_settings_sync" class="button" translate="tab_settings_sites_settings_sync"></button>
+                            </div>
+                            <div class="col text-center">
+                                <button
+                                    id="tab_settings_sites_settings_importExportButton"
+                                    translate="tab_settings_preferencesScreen_importExportButton"
+                                    class="button col"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#tab_settings_sites_settings_importExport_modal">
+                                </button>
+                                <div class="modal fade" id="tab_settings_sites_settings_importExport_modal" tabindex="-1" aria-labelledby="tab_settings_sites_settings_importExport_modal_title" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="tab_settings_sites_settings_importExport_modal_title" translate="tab_settings_sites_settings_importExport_modal_title"></h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    <textarea id="tab_settings_sites_settings_importExport_modal_input" class="form-control" style="text-align: left" rows="10"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" translate="tab_settings_preferencesScreen_importExport_dismiss" id="tab_settings_sites_settings_importExport_dismiss"></button>
+                                                <button type="button" class="btn btn-primary" translate="tab_settings_preferencesScreen_importExport_modal_save" id="tab_settings_sites_settings_importExport_modal_save"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>                
                     </div>
                     <hr>

@@ -1572,6 +1572,62 @@ const tab = {
               await SMSetSitesModifier(sitesModifiers);
             });
           });
+          document.getElementById("tab_settings_sites_settings_importExportButton").addEventListener("click", async () => {
+            const element = document.getElementById("tab_settings_sites_settings_importExport_modal_input");
+            element.value = JSON.stringify(await getOrCreateSitesModifier(), null, 2);
+          });
+          document.getElementById("tab_settings_sites_settings_sync").addEventListener("click", async () => {
+            console.warn("Sync sites modifier from remote");
+          });
+          document.getElementById("tab_settings_sites_settings_importExport_modal_save").addEventListener("click", async () => {
+            const element = document.getElementById("tab_settings_sites_settings_importExport_modal_input");
+            try {
+              JSON.parse(element.value);
+              $('#tab_settings_sites_settings_importExport_modal').modal('hide');
+              await obrowser.storage.local.set({sitesModifier: element.value});
+            } catch(error) {
+              alert("Cannot set preferences : \n " + error.name + "\n  " + error.message);
+            }
+          });
+          const img = document.createElement("img");
+          this.data.img = img;
+          img.setAttribute("width", "20px");
+          img.setAttribute("height", "20px");
+          img.setAttribute("style", "margin-left: 5px;");
+          img.setAttribute("src", await obrowser.runtime.getURL("/img/refresh.png"));
+          img.hidden = true;
+          const imgAnimation = rotateAnimation.newInstance();
+          this.data.imgAnimation = imgAnimation;
+          imgAnimation.button = $(img);
+          imgAnimation.loop = true;
+          this.data.imgAnimation.onAnimationEnd = async function () {
+            img.hidden = true;
+          };
+          // part of the refresh system
+          const div = $("#tab_settings_sites_settings_sync_container");
+          div.click(async function() {
+            const dateNow = Date.now();
+            obrowser.runtime.sendMessage({action: "forceSiteModifierUpdater"});
+            if ( await getPref("tab.animate") ) {
+              img.hidden = false;
+              imgAnimation.start();
+              const interval = setInterval(async function() {
+                const sitesModifier = await obrowser.storage.local.get("sitesModifier").sitesModifier;
+                if ( sitesModifier !== undefined ) {
+                  const sitesModifierObject = JSON.parse(sitesModifier);
+                  if ( sitesModifierObject.lastRefresh !== undefined ) {
+                    if ( dateNow < sitesModifierObject.lastRefresh ) {
+                      imgAnimation.loop = false;
+                      clearInterval(interval);
+                    } else {
+
+                    }
+                  }
+                }
+              }, 1000);
+            }
+          });
+          div.append(img);
         },
         update: async function() {
           this.createEntries(false);
