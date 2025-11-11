@@ -568,6 +568,12 @@
   "tab_settings_sites_settings_table_origin": {
     "message": "Ursprung"
   },
+  "tab_settings_sites_settings_importExport_modal_title": {
+    "message": "Website-Einstellungen"
+  },
+  "tab_settings_sites_settings_sync": {
+      "message": "Synchronisieren"
+  },
   "tab_custom_ci_factor_title": {
     "message": "Faktor hinzufügen"
   },
