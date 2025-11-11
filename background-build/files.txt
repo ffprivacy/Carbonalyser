@@ -12,4 +12,5 @@ background-src/regionUpdater.js
 background-src/trafficAnalyzer.js
 background-src/attentionAnalyzer.js
 background-src/periodicDownload.js
+background-src/sitesUpdater.js
 
