@@ -1679,6 +1679,10 @@ storageChangedTimeoutCall = async () => {
     tab.prediction.update();
   }
 
+  if ( storageChangedAreas.indexOf("parameters") != -1 ) {
+    tab.update();
+  }
+
   if ( storageChangedAreas.indexOf("rawdata") != -1 ) {
     if ( await getPref("tab.update.auto_refresh") ) {
       tab.results.update();
