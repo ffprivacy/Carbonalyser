@@ -1663,13 +1663,35 @@ animateRotationDummyButton = async (done) => {
 
 let lastUpdate = null;
 let storageChangedTimeout = null;
+let storageChangedAreas = [];
 
 /**
  * Prevent storage changed flood during call.
  */
-storageChangedTimeoutCall = () => {
+storageChangedTimeoutCall = async () => {
+
   printDebug("Refresh data in the tab");
-  tab.update();
+
+  if ( storageChangedAreas.indexOf("stats") != -1 ) {
+    tab.stats = await getOrCreateStats();
+    tab.results.update();
+    tab.history.update();
+    tab.prediction.update();
+  }
+
+  if ( storageChangedAreas.indexOf("rawdata") != -1 ) {
+    if ( await getPref("tab.update.auto_refresh") ) {
+      tab.results.update();
+      tab.history.update();
+      tab.prediction.update();
+    }
+  }
+
+  if ( storageChangedAreas.indexOf("pref") != -1 ) {
+    tab.update();
+  }
+
+  storageChangedAreas = [];
   storageChangedTimeout = null;
 }
 
@@ -1689,18 +1711,11 @@ handleStorageChanged = async (changes, areaName) => {
       }
     }
 
-    if ( changes["stats"] !== undefined ) {
-      tab.stats = await getOrCreateStats();
+    for(const area in changes) {
+      storageChangedAreas.push(area);
     }
 
-    if ( changes["rawdata"] === undefined ) {
-      storageChangedTimeout = setTimeout(storageChangedTimeoutCall, 100);
-    } else {
-      if ( await getPref("tab.update.auto_refresh") ) {
-        storageChangedTimeout = setTimeout(storageChangedTimeoutCall, 100);
-      }
-    }
-
+    storageChangedTimeout = setTimeout(storageChangedTimeoutCall, 100);
   }
 }
 
