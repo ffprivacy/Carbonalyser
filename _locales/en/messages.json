@@ -505,6 +505,9 @@
   "tab_settings_preferencesScreen_prefs_analysis_carbonIntensity_refreshMs": {
     "message": "refresh carbon interval"
   },
+  "tab_settings_preferencesScreen_prefs_analysis_sites_refreshMs": {
+    "message": "refresh site settings interval"
+  },
   "tab_settings_preferencesScreen_prefs_tab_update_resize_delay": {
     "message": "Latency to apply when graph resize is triggered (in ms)."
   },

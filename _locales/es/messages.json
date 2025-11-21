@@ -505,6 +505,9 @@
     "tab_settings_preferencesScreen_prefs_analysis_carbonIntensity_refreshMs": {
       "message": "Intervalo (en ms) para actualizar los factores de intensidad de carbono."
     },
+    "tab_settings_preferencesScreen_prefs_analysis_sites_refreshMs": {
+      "message": "intervalo de actualización de la configuración del sitio"
+    },
     "tab_settings_preferencesScreen_prefs_tab_update_resize_delay": {
       "message": "Aplicar latencia cuando se cambia el tamaño de un gráfico (en ms)."
     },
