@@ -2373,4 +2373,18 @@ obrowser.runtime.onMessage.addListener(async (request, sender, sendResponse) => 
 
 });
 
+
+obrowser.storage.onChanged.addListener(async (changes, areaName) => {
+    if ( areaName == "local" ) {
+        if ( changes["pref"] !== undefined ) {
+            SU_stop();
+            SU_init();
+        } else {
+            // no changes to preferences
+        }
+    } else {
+        // no used
+    }
+});
+
 SU_init();
