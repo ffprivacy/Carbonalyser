@@ -317,7 +317,7 @@ createMVC = (o) => {
 				createMVC(o[k]);
 			}
 		}
-    } 
+    }
     for(const part of parts) {
         if ( o[part] === undefined ) {
             o[part] = {};
@@ -334,6 +334,16 @@ createMVC = (o) => {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+    // Add wrappers
+    for(const fname of fToAttach ) {
+        if ( o[fname] === undefined ) {
+            o[fname] = async function () {
+                for(const part of parts) {
+                    await o[part][fname]();
                 }
             }
         }
@@ -829,7 +839,7 @@ computeEquivalenceFromStatsItem = async (stats) => {
 let DISABLED_URLS = [/^about:.*$/,
     /^chrome:.*$/,/^chrome-extension:.*$/,/^blob:chrome:.*$/,/^blob:chrome-extension:.*$/,
     /^moz-extension:.*$/,/^blob:moz-extension:.*$/,
-    /^https?:\/\/localhost(:[0-9]+)?\/.*$/,/^[^\/:]+:\/\/127\.[0-9]+\.[0-9]+\.[0-9]+(:[0-9]+)?\//,
+    /^https?:\/\/localhost(:[0-9]+)?\/.*$/,/^[^\/:]+:\/\/127\.[0-9]+\.[0-9]+\.[0-9]+(:[0-9]+)?\/?/,
     /^$/, /^file:\/\//
 ];
 
@@ -2086,7 +2096,7 @@ addOneMinute = async () => {
 let addOneMinuteInterval;
 let currentState = '';
 
-handleMessage = async (request) => {
+handleMessage = async (request, sender, sendResponse) => {
   printDebug("trafficAnalyzer: request: {action: " + request.action + ", currentState: " + currentState + "}");
   if ( request.action === currentState ) {
     // event duplicate emission
@@ -2143,16 +2153,24 @@ handleMessage = async (request) => {
     // Update the content size with the page analyzer
     case 'page-size-change':
       if ( await storageGetAnalysisState() ) {
-          const hostname = extractHostname(request.origin);
-          let originData = buffer.rawdata[hostname];
-          if ( originData === undefined ) {
-              originData = createEmptyRawData();
-              buffer.rawdata[hostname] = originData;
+          if ( isRestricted(request.origin) ) {
+            // nothing to do
+          } else {
+            const hostname = extractHostname(request.origin);
+            let originData = buffer.rawdata[hostname];
+            if ( originData === undefined ) {
+                originData = createEmptyRawData();
+                buffer.rawdata[hostname] = originData;
+            }
+            originData.datacenter.total += request.delta_bytes;
+            originData.network.total += 0;
           }
-          originData.datacenter.total += request.delta_bytes;
-          originData.network.total += 0;
       }
       return;
+    case 'GET_DISABLED_URLS': {
+      const serialized = DISABLED_URLS.map(r => ({ source: r.source, flags: r.flags }))
+      sendResponse({ serialized })
+    } return;
     default:
       printDebug("Unknow order");
   }

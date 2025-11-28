@@ -377,7 +377,7 @@ addOneMinute = async () => {
 let addOneMinuteInterval;
 let currentState = '';
 
-handleMessage = async (request) => {
+handleMessage = async (request, sender, sendResponse) => {
   printDebug("trafficAnalyzer: request: {action: " + request.action + ", currentState: " + currentState + "}");
   if ( request.action === currentState ) {
     // event duplicate emission
@@ -434,16 +434,24 @@ handleMessage = async (request) => {
     // Update the content size with the page analyzer
     case 'page-size-change':
       if ( await storageGetAnalysisState() ) {
-          const hostname = extractHostname(request.origin);
-          let originData = buffer.rawdata[hostname];
-          if ( originData === undefined ) {
-              originData = createEmptyRawData();
-              buffer.rawdata[hostname] = originData;
+          if ( isRestricted(request.origin) ) {
+            // nothing to do
+          } else {
+            const hostname = extractHostname(request.origin);
+            let originData = buffer.rawdata[hostname];
+            if ( originData === undefined ) {
+                originData = createEmptyRawData();
+                buffer.rawdata[hostname] = originData;
+            }
+            originData.datacenter.total += request.delta_bytes;
+            originData.network.total += 0;
           }
-          originData.datacenter.total += request.delta_bytes;
-          originData.network.total += 0;
       }
       return;
+    case 'GET_DISABLED_URLS': {
+      const serialized = DISABLED_URLS.map(r => ({ source: r.source, flags: r.flags }))
+      sendResponse({ serialized })
+    } return;
     default:
       printDebug("Unknow order");
   }
